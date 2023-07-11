@@ -18,4 +18,6 @@ public class TeamMembership {
     private User user;
 
     // Constructors, getters, and setters
+
+
 }

@@ -6,7 +6,7 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "grade_comments")
-public class GradeComment {
+public class Assessment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -29,4 +29,24 @@ public class GradeComment {
     private Float grade;
 
     // Constructors, getters, and setters
+
+    public Assessment() {
+    }
+
+    public Assessment(User mentor, User member, String comment, LocalDateTime edited, Float grade) {
+        this.mentor = mentor;
+        this.member = member;
+        this.comment = comment;
+        this.edited = edited;
+        this.grade = grade;
+    }
+
+    public Assessment(Long id, User mentor, User member, String comment, LocalDateTime edited, Float grade) {
+        this.id = id;
+        this.mentor = mentor;
+        this.member = member;
+        this.comment = comment;
+        this.edited = edited;
+        this.grade = grade;
+    }
 }
