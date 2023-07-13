@@ -1,23 +1,27 @@
 package com.solid.solidbackend.Entities;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 
 @Entity
+@Getter
+@Setter
 @Table(name = "team_memberships")
-public class TeamMembership {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "team_id", nullable = false)
+public class TeamMembership extends BaseEntity {
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "teamId", nullable = false)
     private Team team;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
+    @JoinColumn(name = "userId", nullable = false)
     private User user;
 
-    // Constructors, getters, and setters
+    public TeamMembership() {
+    }
 
-
+    public TeamMembership(Team team, User user) {
+        this.team = team;
+        this.user = user;
+    }
 }

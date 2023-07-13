@@ -1,52 +1,49 @@
 package com.solid.solidbackend.Entities;
 
 import jakarta.persistence.*;
-
-import java.time.LocalDateTime;
+import lombok.Getter;
+import lombok.Setter;
 
 @Entity
-@Table(name = "grade_comments")
-public class Assessment {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+@Getter
+@Setter
+@Table(name = "assessment")
+public class Assessment extends BaseEntity {
+    @Column(nullable = false)
+    private String title;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "mentor_id", nullable = false)
+    @JoinColumn(name = "activityId", nullable = false)
+    private Activity activity;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "mentorId", nullable = false)
     private User mentor;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_id", nullable = false)
+    @JoinColumn(name = "memberId", nullable = false)
     private User member;
-
-    @Column(nullable = false)
-    private String comment;
-
-    @Column(nullable = false)
-    private LocalDateTime edited;
 
     @Column(nullable = false)
     private Float grade;
 
-    // Constructors, getters, and setters
+    @Column(nullable = false)
+    private Boolean attended;
+
+    @Column
+    private String comment;
 
     public Assessment() {
     }
 
-    public Assessment(User mentor, User member, String comment, LocalDateTime edited, Float grade) {
+    public Assessment(String title, Activity activity, User mentor, User member,
+                      Float grade, Boolean attended, String comment) {
+        this.title = title;
+        this.activity = activity;
         this.mentor = mentor;
         this.member = member;
-        this.comment = comment;
-        this.edited = edited;
         this.grade = grade;
-    }
-
-    public Assessment(Long id, User mentor, User member, String comment, LocalDateTime edited, Float grade) {
-        this.id = id;
-        this.mentor = mentor;
-        this.member = member;
+        this.attended = attended;
         this.comment = comment;
-        this.edited = edited;
-        this.grade = grade;
     }
 }

@@ -6,14 +6,10 @@ import lombok.Getter;
 import lombok.Setter;
 
 @Entity
-@Table(name = "users")
 @Getter
 @Setter
-public class User {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
+@Table(name = "users")
+public class User extends BaseEntity {
     @Column(nullable = false)
     private String name;
 
@@ -24,19 +20,10 @@ public class User {
     @Column
     private String pictureUrl;
 
-    // Constructors (one empty, one complete, one wo id)
-
     public User() {
     }
 
     public User(String name, Role role, String pictureUrl) {
-        this.name = name;
-        this.role = role;
-        this.pictureUrl = pictureUrl;
-    }
-
-    public User(Long id, String name, Role role, String pictureUrl) {
-        this.id = id;
         this.name = name;
         this.role = role;
         this.pictureUrl = pictureUrl;
