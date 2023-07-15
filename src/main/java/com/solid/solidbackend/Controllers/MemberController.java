@@ -14,6 +14,7 @@ import java.util.List;
 @RestController
 @RequestMapping(path = "/DEPRICATED!!")
 public class MemberController{
+
 //    private final UserService userService;
 //    @Autowired
 //    public MemberController(UserService userService) {
