@@ -4,6 +4,9 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.LinkedList;
+import java.util.List;
+
 @Entity
 @Getter
 @Setter
@@ -17,11 +20,21 @@ public class Team extends BaseEntity {
     @JoinColumn(name = "leaderId", nullable = false)
     private User leader;
 
+    @Transient
+    private List<User> teamMembers;
+
+    @Transient
+    private float teamGrade;
+
+
     public Team() {
+
     }
 
     public Team(String name, User leader) {
         this.name = name;
         this.leader = leader;
     }
+
+
 }

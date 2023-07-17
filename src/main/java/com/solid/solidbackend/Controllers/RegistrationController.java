@@ -26,8 +26,8 @@ public class RegistrationController {
     }
 
     @PostMapping("/new/member/{activityName}")
-    public ResponseEntity<Optional<User>> addUser(@RequestBody User user,
-                                                  @PathVariable String activityName) {
+    public ResponseEntity<Optional<User>> addMember(@RequestBody User user,
+                                                    @PathVariable String activityName) {
         // Logic to handle new user registration if he selects he is a member
         // If for some reason the user exists already you should not create the user
         // !! If activityName DOES NOT exist you should not create the user, because he has no team to join
@@ -49,8 +49,8 @@ public class RegistrationController {
     }
 
     @PostMapping("/new/lead/{teamName}")
-    public ResponseEntity<Optional<User>> addLead(@RequestBody User user,
-                                                  @PathVariable String teamName) {
+    public ResponseEntity<Optional<User>> addTeamLeader(@RequestBody User user,
+                                                        @PathVariable String teamName) {
         // Logic to handle new user registration if he is a team lead
         // If for some reason the user exists already you should not create the user
         // If teamName already exists you should not create the user

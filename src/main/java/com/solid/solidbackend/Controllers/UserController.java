@@ -42,9 +42,8 @@ public class UserController {
         return null;
     }
 
-    @PutMapping("/activities/{userId}/join/{activityName}")
-    public ResponseEntity<Optional<Activity>> joinExistingActivity(@PathVariable String activityName) {
-
+    @PostMapping("/activities/{userId}/join/{activityName}")
+    public ResponseEntity<Optional<Activity>> joinExistingActivity(@PathVariable String activityName) throws Exception{
         // Self explanatory
         // can only be used by team leader and mentor
         // returns optional because the validation can go wrong
@@ -59,8 +58,5 @@ public class UserController {
         // Logic to fetch and return team information with all members for the specified activity
         // Make sure to also return a list of members in some way\
         return null;
-
     }
-
-
 }

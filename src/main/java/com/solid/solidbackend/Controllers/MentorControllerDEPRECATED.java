@@ -1,20 +1,10 @@
 package com.solid.solidbackend.Controllers;
 
-import com.solid.solidbackend.Entities.Activity;
-import com.solid.solidbackend.Entities.Assessment;
-import com.solid.solidbackend.Entities.Team;
-import com.solid.solidbackend.Entities.User;
-import com.solid.solidbackend.Enums.Role;
-import com.solid.solidbackend.Services.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping(path = "/alsoDepricated")
-public class MentorController{
+public class MentorControllerDEPRECATED {
 //    private final UserService userService;
 //    @Autowired
 //    public MentorController(UserService userService){
