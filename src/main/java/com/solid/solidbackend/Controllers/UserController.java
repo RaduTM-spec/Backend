@@ -27,7 +27,7 @@ public class UserController {
     }
 
     @GetMapping("/activities/{userId}/assessments")
-    public ResponseEntity<Optional<List<Assessment>>> getUserAssessments(@PathVariable String userId) {
+    public ResponseEntity<List<Assessment>> getUserAssessments(@PathVariable String userId) {
         // Logic to fetch and return all activities and grades, as well as comments for the given user
         // This is used only by the team lead and members
         // returns an optional because the repository can return the value null
@@ -35,15 +35,17 @@ public class UserController {
     }
 
     @PostMapping("/activities/{userId}/create")
-    public ResponseEntity<Optional<Activity>> createActivity(@RequestBody Activity mentorActivity) {
+    public ResponseEntity<Activity> createActivity(@RequestBody Activity mentorActivity) {
         // Logic to create a new activity from the perspective of a mentor
         // If no activity linked to the mentor exists in the database, prompt for creation
         // Return appropriate response
         return null;
     }
 
-    @PostMapping("/activities/{userId}/join/{activityName}")
-    public ResponseEntity<Optional<Activity>> joinExistingActivity(@PathVariable String activityName) throws Exception{
+
+    @PutMapping("/activities/{userId}/join/{activityName}")
+    public ResponseEntity<Activity> joinExistingActivity(@PathVariable String activityName) {
+
         // Self explanatory
         // can only be used by team leader and mentor
         // returns optional because the validation can go wrong
@@ -56,7 +58,7 @@ public class UserController {
     public ResponseEntity<Team> getTeamDetails(@PathVariable String activityName,
                                                @PathVariable String teamName) {
         // Logic to fetch and return team information with all members for the specified activity
-        // Make sure to also return a list of members in some way\
+        // Make sure to also return a list of members in some way
         return null;
     }
 }
