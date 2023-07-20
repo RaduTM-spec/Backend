@@ -7,7 +7,7 @@ import lombok.Setter;
 @Entity
 @Getter
 @Setter
-@Table(name = "team_memberships")
+@Table(name = "teamMemberships")
 public class TeamMembership extends BaseEntity {
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "teamId", nullable = false)

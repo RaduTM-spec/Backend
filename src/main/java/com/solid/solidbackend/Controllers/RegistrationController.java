@@ -26,6 +26,7 @@ public class RegistrationController {
     @PostMapping("/new/member/{activityName}")
     public ResponseEntity<User> addUser(@RequestBody User user,
                                                   @PathVariable String activityName) {
+
         // Logic to handle new user registration if he selects he is a member
         // The user should be considered as non existent
         return null;

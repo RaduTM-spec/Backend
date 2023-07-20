@@ -42,6 +42,7 @@ public class UserController {
         return null;
     }
 
+
     @PutMapping("/activities/{userId}/join/{activityName}")
     public ResponseEntity<Activity> joinExistingActivity(@PathVariable String activityName) {
 
@@ -59,8 +60,5 @@ public class UserController {
         // Logic to fetch and return team information with all members for the specified activity
         // Make sure to also return a list of members in some way
         return null;
-
     }
-
-
 }
