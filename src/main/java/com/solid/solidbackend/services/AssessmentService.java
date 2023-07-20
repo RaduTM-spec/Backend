@@ -9,24 +9,16 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-public class AssessmentService {
+public interface AssessmentService {
 
-    private final AssessmentRepository assessmentRepository;
-
-    @Autowired
-    public AssessmentService(AssessmentRepository assessmentRepository) {
-        this.assessmentRepository = assessmentRepository;
-    }
-
-    public List<Assessment> getAssessmentsByUserId(Long userId)
-    {
-        Optional<List<Assessment>> assessments = assessmentRepository.findAllByUserId(userId);
-
-        if(!assessments.isPresent())
-            throw new IllegalStateException("No assessments found.");
+    List<Assessment> getAllAssessments();
 
 
-        return assessments.get();
-    }
+    List<Assessment> getAssessmentsByUserId(Long userId);
+
+    Assessment getAssessmentById(Long id);
+
+    Assessment createAssessment(Assessment assessment);
+
 
 }

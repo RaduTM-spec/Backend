@@ -1,26 +1,34 @@
 package com.solid.solidbackend.services.implementations;
 
 
+import com.solid.solidbackend.entities.Activity;
+import com.solid.solidbackend.entities.Assessment;
 import com.solid.solidbackend.entities.User;
 import com.solid.solidbackend.exceptions.UserCreationException;
 import com.solid.solidbackend.exceptions.UserNotFoundException;
+import com.solid.solidbackend.repositories.AssessmentRepository;
 import com.solid.solidbackend.repositories.UserRepository;
 import com.solid.solidbackend.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.Optional;
+
 @Service
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
+    private final AssessmentRepository assessmentRepository;
 
     @Autowired
-    public UserServiceImpl(UserRepository userRepository) {
+    public UserServiceImpl(UserRepository userRepository, AssessmentRepository assessmentRepository) {
         this.userRepository = userRepository;
+        this.assessmentRepository = assessmentRepository;
     }
 
     @Override
-    public User findUserByName(String name) {
+    public User getUserByName(String name) {
         return userRepository.findByName(name)
                 .orElseThrow(() -> new UserNotFoundException("User not found with name: " + name));
     }
@@ -33,5 +41,25 @@ public class UserServiceImpl implements UserService {
         }
 
         return userRepository.save(user);
+    }
+
+    @Override
+    public List<Activity> getUserActivities(Long userId) {
+        return null;
+    }
+
+    @Override
+    public List<Activity> getUserActivities(String userId) {
+        return null;
+    }
+
+    @Override
+    public Optional<List<Assessment>> getUserAssessments(Long userId) {
+//
+//         User user = userRepository.findById(userId)
+//                        .orElseThrow(() -> new UserNotFoundException("User not found with ID: " + userId));
+
+        return assessmentRepository.findAllById(userId);
+
     }
 }
