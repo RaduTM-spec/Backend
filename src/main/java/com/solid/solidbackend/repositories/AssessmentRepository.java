@@ -1,6 +1,6 @@
-package com.solid.solidbackend.Repositories;
+package com.solid.solidbackend.repositories;
 
-import com.solid.solidbackend.Entities.Assessment;
+import com.solid.solidbackend.entities.Assessment;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;

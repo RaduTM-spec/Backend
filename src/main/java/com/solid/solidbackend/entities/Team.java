@@ -1,10 +1,9 @@
-package com.solid.solidbackend.Entities;
+package com.solid.solidbackend.entities;
 
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.LinkedList;
 import java.util.List;
 
 @Entity

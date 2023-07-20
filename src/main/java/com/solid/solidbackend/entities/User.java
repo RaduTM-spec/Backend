@@ -1,18 +1,16 @@
-package com.solid.solidbackend.Entities;
+package com.solid.solidbackend.entities;
 
-import com.solid.solidbackend.Enums.Role;
+import com.solid.solidbackend.enums.Role;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
-
-import java.util.List;
 
 @Entity
 @Getter
 @Setter
 @Table(name = "users")
 public class User extends BaseEntity {
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     private String name;
 
     @Enumerated(EnumType.STRING)

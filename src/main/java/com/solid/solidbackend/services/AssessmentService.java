@@ -1,9 +1,7 @@
-package com.solid.solidbackend.Services;
+package com.solid.solidbackend.services;
 
-import com.solid.solidbackend.Entities.Assessment;
-import com.solid.solidbackend.Entities.User;
-import com.solid.solidbackend.Repositories.AssessmentRepository;
-import com.solid.solidbackend.Repositories.UserRepository;
+import com.solid.solidbackend.entities.Assessment;
+import com.solid.solidbackend.repositories.AssessmentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
