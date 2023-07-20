@@ -1,13 +1,12 @@
-package com.solid.solidbackend.Controllers;
+package com.solid.solidbackend.controllers;
 
-import com.solid.solidbackend.Entities.Activity;
-import com.solid.solidbackend.Entities.Assessment;
-import com.solid.solidbackend.Entities.Team;
+import com.solid.solidbackend.entities.Activity;
+import com.solid.solidbackend.entities.Assessment;
+import com.solid.solidbackend.entities.Team;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/")
@@ -42,7 +41,6 @@ public class UserController {
         return null;
     }
 
-
     @PutMapping("/activities/{userId}/join/{activityName}")
     public ResponseEntity<Activity> joinExistingActivity(@PathVariable String activityName) {
 
@@ -60,5 +58,8 @@ public class UserController {
         // Logic to fetch and return team information with all members for the specified activity
         // Make sure to also return a list of members in some way
         return null;
+
     }
+
+
 }

@@ -1,4 +1,4 @@
-package com.solid.solidbackend.Exceptions;
+package com.solid.solidbackend.exceptions;
 
 public class InvalidUserException extends RuntimeException {
 

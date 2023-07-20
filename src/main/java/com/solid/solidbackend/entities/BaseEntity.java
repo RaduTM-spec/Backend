@@ -1,4 +1,4 @@
-package com.solid.solidbackend.Entities;
+package com.solid.solidbackend.entities;
 
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;

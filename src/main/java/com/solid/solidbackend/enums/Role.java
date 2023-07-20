@@ -1,4 +1,4 @@
-package com.solid.solidbackend.Enums;
+package com.solid.solidbackend.enums;
 
 public enum Role
 {

@@ -1,4 +1,4 @@
-package com.solid.solidbackend.Controllers;
+package com.solid.solidbackend.controllers;
 
 import org.apache.catalina.User;
 import org.springframework.http.ResponseEntity;
@@ -25,8 +25,7 @@ public class RegistrationController {
 
     @PostMapping("/new/member/{activityName}")
     public ResponseEntity<User> addUser(@RequestBody User user,
-                                                  @PathVariable String activityName) {
-
+                                        @PathVariable String activityName) {
         // Logic to handle new user registration if he selects he is a member
         // The user should be considered as non existent
         return null;
@@ -40,9 +39,9 @@ public class RegistrationController {
         return null;
     }
 
-    @PostMapping("/new/lead/{activityName}")
+    @PostMapping("/new/lead/{teamName}")
     public ResponseEntity<User> addLead(@RequestBody User user,
-                                                  @PathVariable String teamName) {
+                                        @PathVariable String teamName) {
         // Logic to handle new user registration if he is a team lead
         // Return appropriate response, this should always return a User object
         // We consider that neither the teaam name nor the user already exist
