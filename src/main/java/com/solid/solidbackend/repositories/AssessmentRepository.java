@@ -11,7 +11,6 @@ import java.util.Optional;
 @Repository
 public interface AssessmentRepository extends JpaRepository<Assessment, Long> {
 
-    @Query("SELECT * FROM assessments WHERE userId == ?1")
-    public Optional<List<Assessment>> findAllByUserId(Long userId);
+    Optional<List<Assessment>> findAllById(Long userId);
 
 }
