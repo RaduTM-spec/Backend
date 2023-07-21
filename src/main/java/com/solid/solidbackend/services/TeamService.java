@@ -1,7 +1,7 @@
 package com.solid.solidbackend.services;
 
 import com.solid.solidbackend.entities.Team;
-import com.solid.solidbackend.repositories.TeamRepository;
+import com.solid.solidbackend.repositories.apprepository.TeamRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

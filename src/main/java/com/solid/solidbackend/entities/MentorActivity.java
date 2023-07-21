@@ -10,20 +10,32 @@ import java.util.List;
 @Getter
 @Setter
 @Table(name = "mentorsActivities")
-public class MentorActivity extends BaseEntity {
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinColumn(name = "mentorId", nullable = false)
-    private List<User> mentors;
+public class MentorActivity {
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "activityId", nullable = false)
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @ManyToOne
+    @JoinColumn(name = "mentorId", referencedColumnName = "id")
+    private User mentor;
+
+    @ManyToOne
+    @JoinColumn(name = "activityId", referencedColumnName = "id")
     private Activity activity;
+
 
     public MentorActivity() {
     }
 
-    public MentorActivity(List<User> mentors, Activity activity) {
-        this.mentors = mentors;
+    public MentorActivity(User mentor, Activity activity) {
+        this.mentor = mentor;
+        this.activity = activity;
+    }
+
+    public MentorActivity(Long id, User mentor, Activity activity) {
+        this.id = id;
+        this.mentor = mentor;
         this.activity = activity;
     }
 }

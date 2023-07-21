@@ -8,40 +8,53 @@ import lombok.Setter;
 @Getter
 @Setter
 @Table(name = "assessments")
-public class Assessment extends BaseEntity {
-    @Column(nullable = false)
+public class Assessment {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
     private String title;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "activityId", nullable = false)
+    @ManyToOne
+    @JoinColumn(name = "activityId", referencedColumnName = "id")
     private Activity activity;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "mentorId", nullable = false)
+    @ManyToOne
+    @JoinColumn(name = "mentorId", referencedColumnName = "id")
     private User mentor;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "memberId", nullable = false)
-    private User member;
+    @ManyToOne
+    @JoinColumn(name = "userId", referencedColumnName = "id")
+    private User user;
 
     @Column(nullable = false)
-    private Float grade;
+    private float grade = 0.0f;
 
     @Column(nullable = false)
-    private Boolean attended;
+    private boolean attended = false;
 
-    @Column
-    private String comment;
+    @Column(nullable = false)
+    private String comment = "None";
 
     public Assessment() {
     }
 
-    public Assessment(String title, Activity activity, User mentor, User member,
-                      Float grade, Boolean attended, String comment) {
+    public Assessment(Long id, String title, Activity activity, User mentor, User user, float grade, boolean attended, String comment) {
+        this.id = id;
         this.title = title;
         this.activity = activity;
         this.mentor = mentor;
-        this.member = member;
+        this.user = user;
+        this.grade = grade;
+        this.attended = attended;
+        this.comment = comment;
+    }
+
+    public Assessment(String title, Activity activity, User mentor, User user, float grade, boolean attended, String comment) {
+        this.title = title;
+        this.activity = activity;
+        this.mentor = mentor;
+        this.user = user;
         this.grade = grade;
         this.attended = attended;
         this.comment = comment;

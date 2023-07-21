@@ -6,8 +6,8 @@ import com.solid.solidbackend.entities.Assessment;
 import com.solid.solidbackend.entities.User;
 import com.solid.solidbackend.exceptions.UserCreationException;
 import com.solid.solidbackend.exceptions.UserNotFoundException;
-import com.solid.solidbackend.repositories.AssessmentRepository;
-import com.solid.solidbackend.repositories.UserRepository;
+import com.solid.solidbackend.repositories.apprepository.AssessmentRepository;
+import com.solid.solidbackend.repositories.apprepository.UserRepository;
 import com.solid.solidbackend.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -56,10 +56,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public Optional<List<Assessment>> getUserAssessments(Long userId) {
 //
-//         User user = userRepository.findById(userId)
-//                        .orElseThrow(() -> new UserNotFoundException("User not found with ID: " + userId));
-
-        return assessmentRepository.findAllById(userId);
-
+//
+        return Optional.empty();
     }
 }

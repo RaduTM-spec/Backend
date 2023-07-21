@@ -6,7 +6,6 @@ import com.solid.solidbackend.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
 
 @Service
 public class RegistrationServiceImpl implements RegistrationService {
@@ -21,12 +20,14 @@ public class RegistrationServiceImpl implements RegistrationService {
     @Override
     public User authenticateExistingUser(User user) {
         // more logic needed here
+
         return userService.saveUser(user);
     }
 
     @Override
     public User registerNewMember(User user, String activityName) {
         // more logic needed here
+
         return userService.saveUser(user);
     }
 
@@ -35,12 +36,12 @@ public class RegistrationServiceImpl implements RegistrationService {
         // more logic needed here
 
         return userService.saveUser(user);
-
     }
 
     @Override
     public User registerNewLead(User user, String teamName) {
         // more logic needed here
+
         return userService.saveUser(user);
     }
 }
