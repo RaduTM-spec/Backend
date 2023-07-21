@@ -4,6 +4,7 @@ import com.solid.solidbackend.entities.Assessment;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public interface AssessmentService {
@@ -18,4 +19,5 @@ public interface AssessmentService {
     Assessment createAssessment(Assessment assessment);
 
 
+    List<Assessment> getUserAssessments(Long userId);
 }

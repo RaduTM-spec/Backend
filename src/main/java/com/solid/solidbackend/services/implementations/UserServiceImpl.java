@@ -49,14 +49,9 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<Activity> getUserActivities(String userId) {
+    public List<Assessment> getUserAssessments(Long userId) {
         return null;
     }
 
-    @Override
-    public Optional<List<Assessment>> getUserAssessments(Long userId) {
-//
-//
-        return Optional.empty();
-    }
+
 }

@@ -3,6 +3,8 @@ package com.solid.solidbackend.controllers;
 import com.solid.solidbackend.entities.Activity;
 import com.solid.solidbackend.entities.Assessment;
 import com.solid.solidbackend.entities.Team;
+import com.solid.solidbackend.services.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -11,6 +13,13 @@ import java.util.List;
 @RestController
 @RequestMapping("/")
 public class UserController {
+
+    private final UserService userService;
+
+    @Autowired
+    public UserController(UserService userService) {
+        this.userService = userService;
+    }
 
     @GetMapping("/activities/{userId}")
     public ResponseEntity<List<Activity>> getActivities(@PathVariable String userId) {
@@ -26,7 +35,7 @@ public class UserController {
     }
 
     @GetMapping("/activities/{userId}/assessments")
-    public ResponseEntity<List<Assessment>> getUserAssessments(@PathVariable String userId) {
+    public ResponseEntity<List<Assessment>> getUserAssessments(@PathVariable Long userId) {
         // Logic to fetch and return all activities and grades, as well as comments for the given user
         // This is used only by the team lead and members
         // returns an optional because the repository can return the value null
