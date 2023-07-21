@@ -1,4 +1,4 @@
-package com.solid.solidbackend.repositories;
+package com.solid.solidbackend.repositories.apprepository;
 
 import com.solid.solidbackend.entities.Assessment;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -11,6 +11,7 @@ import java.util.Optional;
 @Repository
 public interface AssessmentRepository extends JpaRepository<Assessment, Long> {
 
-    Optional<List<Assessment>> findAllById(Long userId);
+
+    List<Assessment> findAllByUserId(Long userId);
 
 }
