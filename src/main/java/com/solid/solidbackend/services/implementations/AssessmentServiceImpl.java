@@ -6,6 +6,7 @@ import com.solid.solidbackend.services.AssessmentService;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
+import java.util.Optional;
 
 
 public class AssessmentServiceImpl implements AssessmentService {
@@ -42,6 +43,13 @@ public class AssessmentServiceImpl implements AssessmentService {
 
     @Override
     public Assessment createAssessment(Assessment assessment) {
+        return null;
+    }
+
+
+    @Override
+    public List<Assessment> getUserAssessments(Long userId) {
+
         return null;
     }
 

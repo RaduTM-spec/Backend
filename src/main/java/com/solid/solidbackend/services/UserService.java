@@ -17,7 +17,5 @@ public interface UserService {
 
     List<Activity> getUserActivities(Long userId);
 
-    List<Activity> getUserActivities(String userId);
-
-    Optional<List<Assessment>> getUserAssessments(Long userId);
+    List<Assessment> getUserAssessments(Long userId);
 }
