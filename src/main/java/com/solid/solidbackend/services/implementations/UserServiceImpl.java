@@ -35,7 +35,12 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User saveUser(User user) {
+
+        // if user exists, is GET
+        // else, is POST
+
         // we check if the user already exists by name
+
         if (userRepository.findByName(user.getName()).isPresent()) {
             throw new UserCreationException("Username already exists: " + user.getName());
         }

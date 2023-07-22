@@ -3,7 +3,7 @@ spring:
   datasource:
     url: jdbc:mysql://localhost:3306/solid
     username: root
-    password: LetMeIn!123
+    password: root
 
   jpa:
     hibernate:

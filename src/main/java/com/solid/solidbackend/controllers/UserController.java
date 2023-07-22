@@ -25,12 +25,16 @@ public class UserController {
     public ResponseEntity<List<Activity>> getActivities(@PathVariable String userId) {
         // Logic to fetch and return a list of activities already joined by the user by the user id sent
 
+        // TO DO 2;
         return null;
     }
+
 
     @GetMapping("/activities/{userId}/{activityName}/teams")
     public ResponseEntity<List<Team>> getActivityTeams(@PathVariable String activityName) {
         // Logic to fetch and return all teams linked to the specified activity
+
+        // TO DO 2;
         return null;
     }
 
@@ -39,6 +43,9 @@ public class UserController {
         // Logic to fetch and return all activities and grades, as well as comments for the given user
         // This is used only by the team lead and members
         // returns an optional because the repository can return the value null
+
+        // TO DO 2;
+
         return null;
     }
 
@@ -47,6 +54,8 @@ public class UserController {
         // Logic to create a new activity from the perspective of a mentor
         // If no activity linked to the mentor exists in the database, prompt for creation
         // Return appropriate response
+
+        // TO DO 2;
         return null;
     }
 
@@ -56,6 +65,8 @@ public class UserController {
         // Self explanatory
         // can only be used by team leader and mentor
         // returns optional because the validation can go wrong
+
+        // TO DO 2;
         return null;
     }
 
@@ -66,9 +77,9 @@ public class UserController {
                                                @PathVariable String teamName) {
         // Logic to fetch and return team information with all members for the specified activity
         // Make sure to also return a list of members in some way
+
+
+
         return null;
-
     }
-
-
 }

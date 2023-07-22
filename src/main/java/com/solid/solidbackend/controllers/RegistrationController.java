@@ -1,10 +1,10 @@
 package com.solid.solidbackend.controllers;
 
-import org.apache.catalina.User;
+import com.solid.solidbackend.entities.User;
+import com.solid.solidbackend.services.TeamService;
+import com.solid.solidbackend.services.UserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.Optional;
 
 @RestController
 
@@ -12,7 +12,13 @@ import java.util.Optional;
 public class RegistrationController {
 
     // here you inject the service beans that you use
-
+    private final UserService userService;
+    private final TeamService teamService;
+    public RegistrationController(UserService userService, TeamService teamService)
+    {
+        this.userService = userService;
+        this.teamService = teamService;
+    }
 
     @PostMapping("/")
     public ResponseEntity<User> authenticateUser(@RequestBody User user) {
@@ -20,18 +26,21 @@ public class RegistrationController {
         // This appears if users selects he is an existing user
         // We consider that if the user sends this post, 100% he exists in the database (from IBM specs)
         // So this will always retrun a user obj
+
+        User x = userService.getUserByName(user.getName());
+        return ResponseEntity.ok(x);
+    }
+
+    @PostMapping("/new/member/{teamName}")
+    public ResponseEntity<User> addUserToTeam(@RequestBody User user, @PathVariable String teamName) {
+
+        teamService.addUserToTeam(user, teamName);
         return null;
     }
 
-    @PostMapping("/new/member/{activityName}")
-    public ResponseEntity<User> addUser(@RequestBody User user,
-                                        @PathVariable String activityName) {
-        // Logic to handle new user registration if he selects he is a member
-        // The user should be considered as non existent
-        return null;
-    }
 
-    @PostMapping("/new/mentor/{activityName}/{dueDate}")
+
+  /*  @PostMapping("/new/mentor/{activityName}/{dueDate}")
     public ResponseEntity<Optional<User>> addMentor(@RequestBody User user,
                                                     @PathVariable String activityName,
                                                     @PathVariable String dueDate) {
@@ -48,6 +57,6 @@ public class RegistrationController {
 
         return null;
     }
-
+*/
 
 }
