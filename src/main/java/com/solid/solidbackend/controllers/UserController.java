@@ -21,7 +21,7 @@ public class UserController {
         this.userService = userService;
     }
 
-    @GetMapping("/activities/{userId}")
+    @GetMapping("/activities/{userName}")
     public ResponseEntity<List<Activity>> getActivities(@PathVariable String userId) {
 
 
@@ -30,7 +30,7 @@ public class UserController {
     }
 
 
-    @GetMapping("/activities/{userId}/{activityName}/teams")
+    @GetMapping("/activities/{userName}/{activityName}/teams")
     public ResponseEntity<List<Team>> getActivityTeams(@PathVariable String activityName) {
         // Logic to fetch and return all teams linked to the specified activity
 
@@ -38,8 +38,8 @@ public class UserController {
         return null;
     }
 
-    @GetMapping("/activities/{userId}/assessments")
-    public ResponseEntity<List<Assessment>> getUserAssessments(@PathVariable Long userId) {
+    @GetMapping("/activities/{userName}/assessments")
+    public ResponseEntity<List<Assessment>> getUserAssessments(@PathVariable Long userName) {
         // Logic to fetch and return all activities and grades, as well as comments for the given user
         // This is used only by the team lead and members
         // returns an optional because the repository can return the value null
@@ -49,7 +49,7 @@ public class UserController {
         return null;
     }
 
-    @PostMapping("/activities/{userId}/create")
+    @PostMapping("/activities/{userName}/create")
     public ResponseEntity<Activity> createActivity(@RequestBody Activity mentorActivity) {
         // Logic to create a new activity from the perspective of a mentor
         // If no activity linked to the mentor exists in the database, prompt for creation
@@ -59,7 +59,7 @@ public class UserController {
         return null;
     }
 
-    @PutMapping("/activities/{userId}/join/{activityName}")
+    @PutMapping("/activities/{userName}/join/{activityName}")
     public ResponseEntity<Activity> joinExistingActivity(@PathVariable String activityName) {
 
         // Self explanatory
@@ -72,9 +72,8 @@ public class UserController {
 
 
 
-    @GetMapping("/activities/{userId}/{activityName}/teams/{teamName}")
-    public ResponseEntity<Team> getTeamDetails(@PathVariable String activityName,
-                                               @PathVariable String teamName) {
+    @GetMapping("/activities/{userName}/{activityName}/teams/{teamName}")
+    public ResponseEntity<Team> getTeamDetails(@PathVariable String teamName) {
         // Logic to fetch and return team information with all members for the specified activity
         // Make sure to also return a list of members in some way
 

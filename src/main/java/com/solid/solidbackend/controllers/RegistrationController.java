@@ -6,6 +6,8 @@ import com.solid.solidbackend.services.UserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Optional;
+
 @RestController
 
 @RequestMapping("/")
@@ -35,16 +37,21 @@ public class RegistrationController {
     }
 
     @PostMapping("/new/mentor/{activityName}/{dueDate}")
-    public ResponseEntity<Optional<User>> addMentor(@RequestBody User user,
+    public ResponseEntity<Optional<User>> addMentor(@RequestBody  String userName,
                                                     @PathVariable String activityName,
                                                     @PathVariable String dueDate) {
+        User loggedInMentor = userService.getUserByName(userName);
+
+
+
+
         // Logic to handle new mentor registration
         return null;
     }
 
-    @PostMapping("/new/mentor /{teamName}")
-    public ResponseEntity<User> addLead(@RequestBody User user,
-                                        @PathVariable String teamName) {
+    @PostMapping("/new/mentor/{activityName}")
+    public ResponseEntity<User> addLead(@RequestBody String userName,
+                                        @PathVariable String activityName) {
         // Logic to handle new user registration if he is a team lead
         // Return appropriate response, this should always return a User object
         // We consider that neither the teaam name nor the user already exist

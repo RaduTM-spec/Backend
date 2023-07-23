@@ -4,11 +4,12 @@ import com.solid.solidbackend.entities.Assessment;
 import com.solid.solidbackend.repositories.apprepository.AssessmentRepository;
 import com.solid.solidbackend.services.AssessmentService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
 
-
+@Service
 public class AssessmentServiceImpl implements AssessmentService {
 
     private final AssessmentRepository assessmentRepository;
