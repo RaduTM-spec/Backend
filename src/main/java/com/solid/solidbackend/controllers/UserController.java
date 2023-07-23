@@ -3,6 +3,8 @@ package com.solid.solidbackend.controllers;
 import com.solid.solidbackend.entities.Activity;
 import com.solid.solidbackend.entities.Assessment;
 import com.solid.solidbackend.entities.Team;
+import com.solid.solidbackend.entities.TeamDetails;
+import com.solid.solidbackend.services.TeamService;
 import com.solid.solidbackend.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -15,10 +17,12 @@ import java.util.List;
 public class UserController {
 
     private final UserService userService;
+    private final TeamService teamService;
 
     @Autowired
-    public UserController(UserService userService) {
+    public UserController(UserService userService, TeamService teamService) {
         this.userService = userService;
+        this.teamService = teamService;
     }
 
     @GetMapping("/activities/{userName}")
@@ -73,12 +77,9 @@ public class UserController {
 
 
     @GetMapping("/activities/{userName}/{activityName}/teams/{teamName}")
-    public ResponseEntity<Team> getTeamDetails(@PathVariable String teamName) {
-        // Logic to fetch and return team information with all members for the specified activity
-        // Make sure to also return a list of members in some way
-
-
-
-        return null;
+    public ResponseEntity<TeamDetails> getTeamDetailsFromAnActivity(@PathVariable String activityName,
+                                                                    @PathVariable String teamName) {
+        TeamDetails td = teamService.getTeamDetailsFromAnActivity(activityName, teamName);
+        return ResponseEntity.ok(td);
     }
 }
