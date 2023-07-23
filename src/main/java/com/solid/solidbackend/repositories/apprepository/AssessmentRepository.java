@@ -11,7 +11,6 @@ import java.util.Optional;
 @Repository
 public interface AssessmentRepository extends JpaRepository<Assessment, Long> {
 
-
     List<Assessment> findAllByUserId(Long userId);
 
 }
