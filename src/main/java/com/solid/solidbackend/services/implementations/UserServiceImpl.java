@@ -13,7 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -34,17 +33,19 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public User getUserByNameAndRole(String name, String role) {
+        return null;
+    }
+
+    @Override
     public User saveUser(User user) {
 
-        // if user exists, is GET
-        // else, is POST
 
         // we check if the user already exists by name
 
         if (userRepository.findByName(user.getName()).isPresent()) {
             throw new UserCreationException("Username already exists: " + user.getName());
         }
-
         return userRepository.save(user);
     }
 

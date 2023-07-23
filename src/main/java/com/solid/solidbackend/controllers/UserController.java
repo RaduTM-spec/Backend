@@ -23,7 +23,7 @@ public class UserController {
 
     @GetMapping("/activities/{userId}")
     public ResponseEntity<List<Activity>> getActivities(@PathVariable String userId) {
-        // Logic to fetch and return a list of activities already joined by the user by the user id sent
+
 
         // TO DO 2;
         return null;

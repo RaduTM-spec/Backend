@@ -5,8 +5,3 @@ VALUES
     ('Bob Johnson', 'MEMBER', 'https://robohash.com/bob.jpg'),
     ('Alice Brown', 'MEMBER', 'https://robohash.com/alice.jpg'),
     ('Mike Wilson', 'MENTOR', 'https://robohash.com/wilson.jpg');
-
-
-
-
-
