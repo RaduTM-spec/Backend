@@ -4,6 +4,7 @@ package com.solid.solidbackend.services.implementations;
 import com.solid.solidbackend.entities.Activity;
 import com.solid.solidbackend.entities.Assessment;
 import com.solid.solidbackend.entities.User;
+import com.solid.solidbackend.enums.Role;
 import com.solid.solidbackend.exceptions.UserCreationException;
 import com.solid.solidbackend.exceptions.UserNotFoundException;
 import com.solid.solidbackend.repositories.apprepository.AssessmentRepository;
@@ -27,7 +28,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User getUserByName(String name) {
+    public User getUserByName(String name) throws UserNotFoundException {
         return userRepository.findByName(name)
                 .orElseThrow(() -> new UserNotFoundException("User not found with name: " + name));
     }
@@ -47,6 +48,14 @@ public class UserServiceImpl implements UserService {
             throw new UserCreationException("Username already exists: " + user.getName());
         }
         return userRepository.save(user);
+    }
+
+    public User createUser(String name, Role role) {
+
+        String pictureUrl = "https://robohash.org/"+ name + ".png";
+        User newUser = new User(name, role, pictureUrl);
+
+        return saveUser(newUser);
     }
 
     @Override

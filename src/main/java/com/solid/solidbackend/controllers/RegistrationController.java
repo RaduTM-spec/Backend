@@ -34,14 +34,25 @@ public class RegistrationController {
     }
 
     @PostMapping("/new/member/{teamName}")
-    public ResponseEntity<User> addUserToTeam(@RequestBody String username, @PathVariable String teamName) {
+    public ResponseEntity<User> createMemberAndAddMemberToTeam(@RequestBody String username, @PathVariable String teamName) {
 
         User u = teamService.addUserToTeam(username, teamName);
         return ResponseEntity.ok(u);
     }
 
+    /**
+     *  For Radu Backend
+     *
+     * 1. Creates a new mentor user
+     * 2. If the activity entered exists, it links the mentor with the activity
+     *    Else it creates a new activity and links the mentor to it;
+     * @param userName
+     * @param activityName
+     * @param dueDate
+     * @return
+     */
     @PostMapping("/new/mentor/{activityName}/{dueDate}")
-    public ResponseEntity<Optional<User>> addMentor(@RequestBody  String userName,
+    public ResponseEntity<User> createMentorAndAddMentor(@RequestBody  String userName,
 
                                                     @PathVariable String activityName,
                                                     @PathVariable String dueDate) {
@@ -54,8 +65,17 @@ public class RegistrationController {
         return null;
     }
 
+
+    /**
+     * 1. Creates a new leader
+     * 2. If the team already exists, its bad
+     *    Else it creates a team and a membership it;
+     * @param user
+     * @param teamName
+     * @return
+     */
     @PostMapping("/new/lead/{teamName}")
-    public ResponseEntity<User> addLead(@RequestBody User user,
+    public ResponseEntity<User> createLeadAndAddLead(@RequestBody User user,
                                         @PathVariable String teamName) {
 
         // Logic to handle new user registration if he is a team lead
