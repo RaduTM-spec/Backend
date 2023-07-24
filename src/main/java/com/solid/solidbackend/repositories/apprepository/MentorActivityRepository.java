@@ -6,4 +6,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface MentorActivityRepository extends JpaRepository<MentorActivity, Long> {
 
 
+
 }

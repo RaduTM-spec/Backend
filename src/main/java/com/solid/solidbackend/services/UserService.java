@@ -3,7 +3,7 @@ package com.solid.solidbackend.services;
 import com.solid.solidbackend.entities.Assessment;
 import com.solid.solidbackend.entities.User;
 import com.solid.solidbackend.entities.Activity;
-import org.apache.catalina.Role;
+import com.solid.solidbackend.enums.Role;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -17,6 +17,8 @@ public interface UserService {
     User getUserByNameAndRole(String name, String role);
 
     User saveUser(User user);
+
+    User createNewUser(String name, Role role);
 
     List<Activity> getUserActivities(Long userId);
 
