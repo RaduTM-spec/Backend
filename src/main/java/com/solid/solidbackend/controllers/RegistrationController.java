@@ -1,12 +1,14 @@
 package com.solid.solidbackend.controllers;
 
 import com.solid.solidbackend.entities.User;
+import com.solid.solidbackend.enums.Role;
+import com.solid.solidbackend.services.ActivityService;
+import com.solid.solidbackend.services.MentorActivityService;
+import com.solid.solidbackend.services.TeamService;
 import com.solid.solidbackend.services.implementations.TeamServiceImpl;
 import com.solid.solidbackend.services.UserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.Optional;
 
 @RestController
 
@@ -15,11 +17,16 @@ public class RegistrationController {
 
     // here you inject the service beans that you use
     private final UserService userService;
-    private final TeamServiceImpl teamService;
-    public RegistrationController(UserService userService, TeamServiceImpl teamService)
+    private final TeamService teamService;
+    private final MentorActivityService mentorActivityService;
+    private final ActivityService activityService;
+
+    public RegistrationController(UserService userService, TeamServiceImpl teamService, MentorActivityService mentorActivityService, ActivityService activityService)
     {
         this.userService = userService;
         this.teamService = teamService;
+        this.mentorActivityService = mentorActivityService;
+        this.activityService = activityService;
     }
 
     @PostMapping("/")
@@ -41,7 +48,6 @@ public class RegistrationController {
     }
 
     /**
-     *  For Radu Backend
      *
      * 1. Creates a new mentor user
      * 2. If the activity entered exists, it links the mentor with the activity
@@ -53,16 +59,16 @@ public class RegistrationController {
      */
     @PostMapping("/new/mentor/{activityName}/{dueDate}")
     public ResponseEntity<User> createMentorAndAddMentor(@RequestBody  String userName,
+                                                        @PathVariable String activityName,
+                                                        @PathVariable String dueDate) {
 
-                                                    @PathVariable String activityName,
-                                                    @PathVariable String dueDate) {
-        User loggedInMentor = userService.getUserByName(userName);
-
-
+        User newMentor = userService.createNewUser(userName, Role.MENTOR);
 
 
-        // Logic to handle new mentor registration
-        return null;
+        // to handle the new mentor linking to existing/new activity
+        this.activityService.addNewMentorToActivity(activityName, newMentor, dueDate);
+
+        return ResponseEntity.ok(newMentor);
     }
 
 

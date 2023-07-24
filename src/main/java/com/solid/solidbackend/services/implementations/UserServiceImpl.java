@@ -44,18 +44,19 @@ public class UserServiceImpl implements UserService {
     @Override
     public User saveUser(User user) {
 
-
         // we check if the user already exists by name
-
         if (userRepository.findByName(user.getName()).isPresent()) {
             throw new UserCreationException("Username already exists: " + user.getName());
         }
+
         return userRepository.save(user);
     }
 
-    public User createUser(String name, Role role) {
+    @Override
+    public User createNewUser(String name, Role role) {
 
-        String pictureUrl = "https://robohash.org/" + name + ".png";
+        String pictureUrl = "https://robohash.org/"+ name + ".png";
+
         User newUser = new User(name, role, pictureUrl);
 
         return saveUser(newUser);
