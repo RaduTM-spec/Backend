@@ -22,7 +22,9 @@ public class UserServiceImpl implements UserService {
     private final ActivityRepository activityRepository;
 
     @Autowired
-    public UserServiceImpl(UserRepository userRepository, AssessmentRepository assessmentRepository, TeamActivityRepository teamActivityRepository, TeamMembershipRepository teamMembershipRepository, ActivityRepository activityRepository) {
+    public UserServiceImpl(UserRepository userRepository, AssessmentRepository assessmentRepository,
+                           TeamActivityRepository teamActivityRepository, TeamMembershipRepository teamMembershipRepository,
+                           ActivityRepository activityRepository) {
         this.userRepository = userRepository;
         this.assessmentRepository = assessmentRepository;
         this.teamActivityRepository = teamActivityRepository;
@@ -62,28 +64,11 @@ public class UserServiceImpl implements UserService {
         return saveUser(newUser);
     }
 
-    @Override
-    public List<Activity> getUserActivities(String userName) {
-        // Get user's team
-        User user = userRepository.findByName(userName).get();//TODO error checking
-        Team team = teamMembershipRepository.findTeamByUserId(user.getId());
 
-        // Use team's id to retrieve all activities
-        List<TeamActivity> teamActivities = teamActivityRepository.findAllActivitiesByTeamId(team.getId());
-        return teamActivities.stream().map(TeamActivity::getActivity).toList();
-    }
 
-    @Override
-    public List<Assessment> getUserAssessments(Long userId) {
-        return null;
-    }
 
-    @Override
-    public Activity createActivity(Activity activity) {
-        // You might want to move this into it's own service idk
-        activityRepository.save(activity);
-        return activity;
-    }
+
+
 
 
 }

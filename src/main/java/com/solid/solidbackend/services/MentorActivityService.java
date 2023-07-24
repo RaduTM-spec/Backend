@@ -5,5 +5,7 @@ import com.solid.solidbackend.entities.MentorActivity;
 import com.solid.solidbackend.entities.User;
 
 public interface MentorActivityService {
+
     MentorActivity linkMentorWithActivity(User mentor, Activity activity);
+
 }

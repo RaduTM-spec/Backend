@@ -11,8 +11,9 @@ public interface AssessmentService {
 
     List<Assessment> getAllAssessments();
 
-
     List<Assessment> getAssessmentsByUserId(Long userId);
+
+    List<Assessment> getAssessmentsByUserName(Long userName);
 
     Assessment getAssessmentById(Long id);
 

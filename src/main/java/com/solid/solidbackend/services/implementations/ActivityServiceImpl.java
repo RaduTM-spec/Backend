@@ -1,15 +1,13 @@
 package com.solid.solidbackend.services.implementations;
 
-import com.solid.solidbackend.entities.Activity;
-import com.solid.solidbackend.entities.MentorActivity;
-import com.solid.solidbackend.entities.User;
+import com.solid.solidbackend.entities.*;
 import com.solid.solidbackend.exceptions.NoActivityFoundException;
-import com.solid.solidbackend.repositories.apprepository.ActivityRepository;
-import com.solid.solidbackend.repositories.apprepository.MentorActivityRepository;
+import com.solid.solidbackend.repositories.apprepository.*;
 import com.solid.solidbackend.services.ActivityService;
 import com.solid.solidbackend.services.MentorActivityService;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 
@@ -18,35 +16,27 @@ public class ActivityServiceImpl implements ActivityService {
 
     private final ActivityRepository activityRepository;
     private final MentorActivityService mentorActivityService;
+    private final UserRepository userRepository;
+    private final TeamActivityRepository teamActivityRepository;
+    private final TeamMembershipRepository teamMembershipRepository;
 
-    public ActivityServiceImpl(ActivityRepository activityRepository, MentorActivityRepository mentorActivityRepository, MentorActivityService mentorActivityService) {
+    public ActivityServiceImpl(ActivityRepository activityRepository, MentorActivityRepository mentorActivityRepository,
+                               MentorActivityService mentorActivityService, UserRepository userRepository,
+                               TeamActivityRepository teamActivityRepository, TeamMembershipRepository teamMembershipRepository) {
+
         this.activityRepository = activityRepository;
         this.mentorActivityService = mentorActivityService;
 
-    }
-
-
-    /**
-     * Adds mentor to an existing activity
-      * @param mentorName
-     * @param activityName
-     * @param dueDate
-     * @return
-     */
-    public MentorActivity joinMentorToActivity(String mentorName, String activityName, String dueDate) {
-
-//        Activity existingActivity = getActivityByName(activityName);
-//
-//
-//
-//        MentorActivity newMentorActivity = new MentorActivity()
-//
-//        mentorActivityRepository.save();
-
-        return null;
+        this.userRepository = userRepository;
+        this.teamActivityRepository = teamActivityRepository;
+        this.teamMembershipRepository = teamMembershipRepository;
 
     }
 
+    @Override
+    public Activity createActivity(Activity activity) {
+        return activityRepository.save(activity);
+    }
 
     @Override
     public Activity getActivityByName(String activityName) {
@@ -55,6 +45,17 @@ public class ActivityServiceImpl implements ActivityService {
                 () -> new NoActivityFoundException("No activity was found with name: " + activityName)
         );
 
+    }
+
+    @Override
+    public List<Activity> getUserActivities(String userName) {
+        // Get user's team
+        User user = userRepository.findByName(userName).get();//TODO error checking
+        Team team = teamMembershipRepository.findTeamByUserId(user.getId());
+
+        // Use team's id to retrieve all activities
+        List<TeamActivity> teamActivities = teamActivityRepository.findAllActivitiesByTeamId(team.getId());
+        return teamActivities.stream().map(TeamActivity::getActivity).toList();
     }
 
     @Override
@@ -79,9 +80,6 @@ public class ActivityServiceImpl implements ActivityService {
 
         }
 
-
     }
-
-
 
 }

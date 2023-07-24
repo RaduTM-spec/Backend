@@ -20,11 +20,4 @@ public interface UserService {
 
     User createNewUser(String name, Role role);
 
-    List<Activity> getUserActivities(Long userId);
-
-    List<Activity> getUserActivities(String userName);
-
-    List<Assessment> getUserAssessments(Long userId);
-
-    Activity createActivity(Activity mentorActivity);
 }

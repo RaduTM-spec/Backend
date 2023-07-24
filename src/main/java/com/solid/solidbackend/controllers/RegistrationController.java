@@ -19,15 +19,15 @@ public class RegistrationController {
     // here you inject the service beans that you use
     private final UserService userService;
     private final TeamService teamService;
-    private final MentorActivityService mentorActivityService;
     private final ActivityService activityService;
 
-    public RegistrationController(UserService userService, TeamServiceImpl teamService, MentorActivityService mentorActivityService, ActivityService activityService)
+
+    public RegistrationController(UserService userService, TeamServiceImpl teamService, MentorActivityService mentorActivityService, ActivityService activityService, ActivityService activityService1)
     {
         this.userService = userService;
         this.teamService = teamService;
-        this.mentorActivityService = mentorActivityService;
-        this.activityService = activityService;
+        this.activityService = activityService1;
+
     }
 
     @PostMapping("/")
@@ -65,7 +65,6 @@ public class RegistrationController {
 
         User newMentor = userService.createNewUser(userName, Role.MENTOR);
 
-
         // to handle the new mentor linking to existing/new activity
         this.activityService.addNewMentorToActivity(activityName, newMentor, dueDate);
 
@@ -84,9 +83,8 @@ public class RegistrationController {
     @PostMapping("/new/lead/{teamName}")
     public ResponseEntity<User> createLeadAndAddLead(@RequestBody  String userName,
                                                      @PathVariable String teamName) {
-        User u = userService.createNewUser(userName, Role.MEMBER);
+        User u = userService.createNewUser(userName, Role.TEAM_LEADER);
         Team team = teamService.createTeam(teamName, u);
-        teamService.createTeam(team.getName(), u);
         teamService.addUserToTeam(u.getName(), team.getName());
         return ResponseEntity.ok(u);
     }

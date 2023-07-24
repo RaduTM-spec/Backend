@@ -50,8 +50,7 @@ public class TeamServiceImpl implements TeamService {
             throw new TeamExistsException("Team already exists on creating.");
 
         Team team = new Team(teamName, teamLeader);
-        teamRepository.save(team);
-        return team;
+        return teamRepository.save(team);
     }
 
     public TeamDetails getTeamDetailsFromAnActivity(String activityName, String teamname) {

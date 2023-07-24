@@ -4,6 +4,7 @@ import com.solid.solidbackend.entities.Activity;
 import com.solid.solidbackend.entities.Assessment;
 import com.solid.solidbackend.entities.Team;
 import com.solid.solidbackend.entities.TeamDetails;
+import com.solid.solidbackend.services.ActivityService;
 import com.solid.solidbackend.services.AssessmentService;
 import com.solid.solidbackend.services.TeamService;
 import com.solid.solidbackend.services.UserService;
@@ -20,17 +21,19 @@ public class UserController {
     private final UserService userService;
     private final TeamService teamService;
     private final AssessmentService assessmentService;
+    private final ActivityService activityService;
 
     @Autowired
-    public UserController(UserService userService, TeamService teamService, AssessmentService assessmentService) {
+    public UserController(UserService userService, TeamService teamService, AssessmentService assessmentService, ActivityService activityService) {
         this.userService = userService;
         this.teamService = teamService;
         this.assessmentService = assessmentService;
+        this.activityService = activityService;
     }
 
     @GetMapping("/activities/{userName}")
     public ResponseEntity<List<Activity>> getActivities(@PathVariable String userName) {
-        List<Activity> activities = userService.getUserActivities(userName);
+        List<Activity> activities = activityService.getUserActivities(userName);
         return ResponseEntity.ok(activities);
     }
 
@@ -58,7 +61,7 @@ public class UserController {
         // Logic to create a new activity from the perspective of a mentor
         // If no activity linked to the mentor exists in the database, prompt for creation
         // Return appropriate response
-        Activity activity = userService.createActivity(mentorActivity);
+        Activity activity = activityService.createActivity(mentorActivity);
         return ResponseEntity.ok(activity); // TODO idk what to return
     }
 

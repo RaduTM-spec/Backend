@@ -41,6 +41,11 @@ public class AssessmentServiceImpl implements AssessmentService {
     }
 
     @Override
+    public List<Assessment> getAssessmentsByUserName(Long userName) {
+        return null;
+    }
+
+    @Override
     public Assessment getAssessmentById(Long id) {
         return null;
     }
