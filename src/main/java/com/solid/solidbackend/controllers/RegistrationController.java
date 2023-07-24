@@ -1,5 +1,6 @@
 package com.solid.solidbackend.controllers;
 
+import com.solid.solidbackend.entities.Team;
 import com.solid.solidbackend.entities.User;
 import com.solid.solidbackend.enums.Role;
 import com.solid.solidbackend.services.ActivityService;
@@ -42,8 +43,8 @@ public class RegistrationController {
 
     @PostMapping("/new/member/{teamName}")
     public ResponseEntity<User> createMemberAndAddMemberToTeam(@RequestBody String username, @PathVariable String teamName) {
-
-        User u = teamService.addUserToTeam(username, teamName);
+        User u = userService.createNewUser(username, Role.MEMBER);
+        teamService.addUserToTeam(u.getName(), teamName);
         return ResponseEntity.ok(u);
     }
 
@@ -81,14 +82,13 @@ public class RegistrationController {
      * @return
      */
     @PostMapping("/new/lead/{teamName}")
-    public ResponseEntity<User> createLeadAndAddLead(@RequestBody User user,
-                                        @PathVariable String teamName) {
-
-        // Logic to handle new user registration if he is a team lead
-        // Return appropriate response, this should always return a User object
-        // We consider that neither the teaam name nor the user already exist
-
-        return null;
+    public ResponseEntity<User> createLeadAndAddLead(@RequestBody  String userName,
+                                                     @PathVariable String teamName) {
+        User u = userService.createNewUser(userName, Role.MEMBER);
+        Team team = teamService.createTeam(teamName, u);
+        teamService.createTeam(team.getName(), u);
+        teamService.addUserToTeam(u.getName(), team.getName());
+        return ResponseEntity.ok(u);
     }
 
 

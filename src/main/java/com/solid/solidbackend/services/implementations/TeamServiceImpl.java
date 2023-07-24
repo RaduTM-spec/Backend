@@ -1,6 +1,7 @@
 package com.solid.solidbackend.services.implementations;
 
 import com.solid.solidbackend.entities.*;
+import com.solid.solidbackend.exceptions.TeamExistsException;
 import com.solid.solidbackend.exceptions.TeamMembershipExistsException;
 import com.solid.solidbackend.exceptions.TeamNotFoundException;
 import com.solid.solidbackend.repositories.apprepository.*;
@@ -41,6 +42,17 @@ public class TeamServiceImpl implements TeamService {
         return teamOptional.get();
     }
 
+    public Team createTeam(String teamName, User teamLeader)
+    {
+        Optional<Team> teamOptional = teamRepository.findByName(teamName);
+
+        if(teamOptional.isPresent())
+            throw new TeamExistsException("Team already exists on creating.");
+
+        Team team = new Team(teamName, teamLeader);
+        teamRepository.save(team);
+        return team;
+    }
 
     public TeamDetails getTeamDetailsFromAnActivity(String activityName, String teamname) {
         List<User> members = teamMembershipRepository.findAllUsersByTeamName(teamname);
