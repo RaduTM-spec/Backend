@@ -1,22 +1,25 @@
 package com.solid.solidbackend.services.implementations;
 
 import com.solid.solidbackend.entities.Assessment;
+import com.solid.solidbackend.entities.User;
 import com.solid.solidbackend.repositories.apprepository.AssessmentRepository;
+import com.solid.solidbackend.repositories.apprepository.UserRepository;
 import com.solid.solidbackend.services.AssessmentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class AssessmentServiceImpl implements AssessmentService {
 
     private final AssessmentRepository assessmentRepository;
+    private final UserRepository userRepository;
 
     @Autowired
-    public AssessmentServiceImpl(AssessmentRepository assessmentRepository) {
+    public AssessmentServiceImpl(AssessmentRepository assessmentRepository, UserRepository userRepository) {
         this.assessmentRepository = assessmentRepository;
+        this.userRepository = userRepository;
     }
 
     @Override
@@ -49,9 +52,9 @@ public class AssessmentServiceImpl implements AssessmentService {
 
 
     @Override
-    public List<Assessment> getUserAssessments(Long userId) {
-
-        return null;
+    public List<Assessment> getUserAssessments(String userName) {
+        User user = userRepository.findByName(userName).get(); // TODO error checking
+        return assessmentRepository.findAllByUserId(user.getId());
     }
 
 }

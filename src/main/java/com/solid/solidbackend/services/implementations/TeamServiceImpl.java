@@ -3,10 +3,7 @@ package com.solid.solidbackend.services.implementations;
 import com.solid.solidbackend.entities.*;
 import com.solid.solidbackend.exceptions.TeamMembershipExistsException;
 import com.solid.solidbackend.exceptions.TeamNotFoundException;
-import com.solid.solidbackend.repositories.apprepository.AssessmentRepository;
-import com.solid.solidbackend.repositories.apprepository.TeamMembershipRepository;
-import com.solid.solidbackend.repositories.apprepository.TeamRepository;
-import com.solid.solidbackend.repositories.apprepository.UserRepository;
+import com.solid.solidbackend.repositories.apprepository.*;
 import com.solid.solidbackend.services.TeamService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -19,31 +16,33 @@ import java.util.Optional;
 public class TeamServiceImpl implements TeamService {
 
     private final TeamRepository teamRepository;
+    private final TeamActivityRepository teamActivityRepository;
     private final TeamMembershipRepository teamMembershipRepository;
     private final UserRepository userRepository;
     private final AssessmentRepository assessmentRepository;
+    private final ActivityRepository activityRepository;
 
     @Autowired
-    public TeamServiceImpl(TeamRepository teamRepository, TeamMembershipRepository teamMembershipRepository, UserRepository userRepository, AssessmentRepository assessmentRepository) {
+    public TeamServiceImpl(TeamRepository teamRepository, TeamActivityRepository teamActivityRepository, TeamMembershipRepository teamMembershipRepository, UserRepository userRepository, AssessmentRepository assessmentRepository, ActivityRepository activityRepository) {
         this.teamRepository = teamRepository;
+        this.teamActivityRepository = teamActivityRepository;
         this.teamMembershipRepository = teamMembershipRepository;
         this.userRepository = userRepository;
         this.assessmentRepository = assessmentRepository;
+        this.activityRepository = activityRepository;
     }
 
-    public Team getTeamByName(String name)
-    {
+    public Team getTeamByName(String name) {
         Optional<Team> teamOptional = teamRepository.findByName(name);
 
-        if(!teamOptional.isPresent())
+        if (!teamOptional.isPresent())
             throw new TeamNotFoundException(String.format("Team %s not found when searched by name.", name));
 
         return teamOptional.get();
     }
 
 
-    public TeamDetails getTeamDetailsFromAnActivity(String activityName, String teamname)
-    {
+    public TeamDetails getTeamDetailsFromAnActivity(String activityName, String teamname) {
         List<User> members = teamMembershipRepository.findAllUsersByTeamName(teamname);
 
 
@@ -56,32 +55,37 @@ public class TeamServiceImpl implements TeamService {
 
             float meanOfAllGrades = 0f;
             int attendanceCount = 0;
-            for (var ass:
-                 memberAssessments) {
+            for (var ass :
+                    memberAssessments) {
                 meanOfAllGrades += ass.getGrade();
-                if(ass.isAttended())
+                if (ass.isAttended())
                     attendanceCount++;
             }
-            if(memberAssessments.size() != 0) // check for division by 0
+            if (memberAssessments.size() != 0) // check for division by 0
                 meanOfAllGrades /= memberAssessments.size();
 
-            gradesOfMembers.add((Float)meanOfAllGrades);
+            gradesOfMembers.add((Float) meanOfAllGrades);
             attendancesOfMembers.add((Integer) attendanceCount);
         }
 
         Float teamGrade = 0f;
-        for (var memberGrade:
-             gradesOfMembers) {
+        for (var memberGrade :
+                gradesOfMembers) {
             teamGrade += memberGrade;
         }
-        if(teamGrade != 0) // check for division by 0
+        if (teamGrade != 0) // check for division by 0
             teamGrade /= gradesOfMembers.size();
 
         return new TeamDetails(members, gradesOfMembers, attendancesOfMembers, teamGrade);
     }
 
-    public User addUserToTeam(String username, String teamName)
-    {
+    @Override
+    public List<Team> getTeamsByActivity(String activityName) {
+        List<TeamActivity> teamActivities = teamActivityRepository.findAllTeamsByActivityName(activityName);
+        return teamActivities.stream().map(TeamActivity::getTeam).toList();
+    }
+
+    public User addUserToTeam(String username, String teamName) {
         // Find the Team object by name
         var teamOptional = teamRepository.findByName(teamName);
         Team team = teamOptional.get();
@@ -89,12 +93,10 @@ public class TeamServiceImpl implements TeamService {
         // If exists, throw successfull exception
         var teamMembershipOptional = teamMembershipRepository.findById(team.getId());
 
-        if(teamMembershipOptional.isPresent())
-        {
+        if (teamMembershipOptional.isPresent()) {
             throw new TeamMembershipExistsException("User already joined the team.");
         }
         // else it doesn't exist, create new TeamMemebership
-
 
 
         var userOptional = userRepository.findByName(username);

@@ -18,6 +18,5 @@ public interface AssessmentService {
 
     Assessment createAssessment(Assessment assessment);
 
-
-    List<Assessment> getUserAssessments(Long userId);
+    List<Assessment> getUserAssessments(String userName);
 }

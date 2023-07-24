@@ -11,4 +11,6 @@ public interface TeamService {
     public Team getTeamByName(String name);
     public User addUserToTeam(String username, String teamName);
     public TeamDetails getTeamDetailsFromAnActivity(String activityName, String teamname);
+
+    List<Team> getTeamsByActivity(String activityName);
 }

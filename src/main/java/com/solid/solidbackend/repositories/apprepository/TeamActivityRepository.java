@@ -14,5 +14,8 @@ public interface TeamActivityRepository extends JpaRepository<TeamActivity, Long
     List<Team> findAllTeamsByActivityId(Long activityId);
 
     @Query("SELECT ta FROM TeamActivity ta WHERE ta.activity.name = :activityName")
-    List<Team> findAllTeamsByActivityName(String activityName);
+    List<TeamActivity> findAllTeamsByActivityName(String activityName);
+
+    @Query("SELECT ta FROM TeamActivity ta WHERE ta.team.id = :teamId")
+    List<TeamActivity> findAllActivitiesByTeamId(Long teamId);
 }
