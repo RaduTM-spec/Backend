@@ -1,14 +1,11 @@
 package com.solid.solidbackend.services.implementations;
 
 
-import com.solid.solidbackend.entities.Activity;
-import com.solid.solidbackend.entities.Assessment;
-import com.solid.solidbackend.entities.User;
+import com.solid.solidbackend.entities.*;
 import com.solid.solidbackend.enums.Role;
 import com.solid.solidbackend.exceptions.UserCreationException;
 import com.solid.solidbackend.exceptions.UserNotFoundException;
-import com.solid.solidbackend.repositories.apprepository.AssessmentRepository;
-import com.solid.solidbackend.repositories.apprepository.UserRepository;
+import com.solid.solidbackend.repositories.apprepository.*;
 import com.solid.solidbackend.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -20,11 +17,17 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final AssessmentRepository assessmentRepository;
+    private final TeamActivityRepository teamActivityRepository;
+    private final TeamMembershipRepository teamMembershipRepository;
+    private final ActivityRepository activityRepository;
 
     @Autowired
-    public UserServiceImpl(UserRepository userRepository, AssessmentRepository assessmentRepository) {
+    public UserServiceImpl(UserRepository userRepository, AssessmentRepository assessmentRepository, TeamActivityRepository teamActivityRepository, TeamMembershipRepository teamMembershipRepository, ActivityRepository activityRepository) {
         this.userRepository = userRepository;
         this.assessmentRepository = assessmentRepository;
+        this.teamActivityRepository = teamActivityRepository;
+        this.teamMembershipRepository = teamMembershipRepository;
+        this.activityRepository = activityRepository;
     }
 
     @Override
@@ -52,20 +55,33 @@ public class UserServiceImpl implements UserService {
 
     public User createUser(String name, Role role) {
 
-        String pictureUrl = "https://robohash.org/"+ name + ".png";
+        String pictureUrl = "https://robohash.org/" + name + ".png";
         User newUser = new User(name, role, pictureUrl);
 
         return saveUser(newUser);
     }
 
     @Override
-    public List<Activity> getUserActivities(Long userId) {
-        return null;
+    public List<Activity> getUserActivities(String userName) {
+        // Get user's team
+        User user = userRepository.findByName(userName).get();//TODO error checking
+        Team team = teamMembershipRepository.findTeamByUserId(user.getId());
+
+        // Use team's id to retrieve all activities
+        List<TeamActivity> teamActivities = teamActivityRepository.findAllActivitiesByTeamId(team.getId());
+        return teamActivities.stream().map(TeamActivity::getActivity).toList();
     }
 
     @Override
     public List<Assessment> getUserAssessments(Long userId) {
         return null;
+    }
+
+    @Override
+    public Activity createActivity(Activity activity) {
+        // You might want to move this into it's own service idk
+        activityRepository.save(activity);
+        return activity;
     }
 
 

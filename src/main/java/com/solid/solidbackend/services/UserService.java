@@ -18,7 +18,9 @@ public interface UserService {
 
     User saveUser(User user);
 
-    List<Activity> getUserActivities(Long userId);
+    List<Activity> getUserActivities(String userName);
 
     List<Assessment> getUserAssessments(Long userId);
+
+    Activity createActivity(Activity mentorActivity);
 }

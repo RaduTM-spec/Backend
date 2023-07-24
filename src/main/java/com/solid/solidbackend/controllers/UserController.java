@@ -4,6 +4,7 @@ import com.solid.solidbackend.entities.Activity;
 import com.solid.solidbackend.entities.Assessment;
 import com.solid.solidbackend.entities.Team;
 import com.solid.solidbackend.entities.TeamDetails;
+import com.solid.solidbackend.services.AssessmentService;
 import com.solid.solidbackend.services.TeamService;
 import com.solid.solidbackend.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,19 +19,19 @@ public class UserController {
 
     private final UserService userService;
     private final TeamService teamService;
+    private final AssessmentService assessmentService;
 
     @Autowired
-    public UserController(UserService userService, TeamService teamService) {
+    public UserController(UserService userService, TeamService teamService, AssessmentService assessmentService) {
         this.userService = userService;
         this.teamService = teamService;
+        this.assessmentService = assessmentService;
     }
 
     @GetMapping("/activities/{userName}")
-    public ResponseEntity<List<Activity>> getActivities(@PathVariable String userId) {
-
-
-        // TO DO 2;
-        return null;
+    public ResponseEntity<List<Activity>> getActivities(@PathVariable String userName) {
+        List<Activity> activities = userService.getUserActivities(userName);
+        return ResponseEntity.ok(activities);
     }
 
 
@@ -38,19 +39,18 @@ public class UserController {
     public ResponseEntity<List<Team>> getActivityTeams(@PathVariable String activityName) {
         // Logic to fetch and return all teams linked to the specified activity
 
-        // TO DO 2;
-        return null;
+        List<Team> teams = teamService.getTeamsByActivity(activityName);
+        return ResponseEntity.ok(teams);
     }
 
     @GetMapping("/activities/{userName}/assessments")
-    public ResponseEntity<List<Assessment>> getUserAssessments(@PathVariable Long userName) {
+    public ResponseEntity<List<Assessment>> getUserAssessments(@PathVariable String userName) {
         // Logic to fetch and return all activities and grades, as well as comments for the given user
         // This is used only by the team lead and members
         // returns an optional because the repository can return the value null
 
-        // TO DO 2;
-
-        return null;
+        List<Assessment> assessments = assessmentService.getUserAssessments(userName);
+        return ResponseEntity.ok(assessments);
     }
 
     @PostMapping("/activities/{userName}/create")
@@ -58,9 +58,8 @@ public class UserController {
         // Logic to create a new activity from the perspective of a mentor
         // If no activity linked to the mentor exists in the database, prompt for creation
         // Return appropriate response
-
-        // TO DO 2;
-        return null;
+        Activity activity = userService.createActivity(mentorActivity);
+        return ResponseEntity.ok(activity); // TODO idk what to return
     }
 
     @PutMapping("/activities/{userName}/join/{activityName}")
@@ -73,7 +72,6 @@ public class UserController {
         // TO DO 2;
         return null;
     }
-
 
 
     @GetMapping("/activities/{userName}/{activityName}/teams/{teamName}")
