@@ -4,6 +4,7 @@ import com.solid.solidbackend.entities.*;
 import com.solid.solidbackend.exceptions.TeamExistsException;
 import com.solid.solidbackend.exceptions.TeamMembershipExistsException;
 import com.solid.solidbackend.exceptions.TeamNotFoundException;
+import com.solid.solidbackend.exceptions.UserNotFoundException;
 import com.solid.solidbackend.repositories.apprepository.*;
 import com.solid.solidbackend.services.TeamService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -96,28 +97,54 @@ public class TeamServiceImpl implements TeamService {
         return teamActivities.stream().map(TeamActivity::getTeam).toList();
     }
 
+//    public User addUserToTeam(String username, String teamName) {
+//        // Find the Team object by name
+//        var teamOptional = teamRepository.findByName(teamName);
+//        Team team = teamOptional.get();
+//
+//        // If exists, throw successfull exception
+//        var teamMembershipOptional = teamMembershipRepository.findById(team.getId());
+//
+//        if (teamMembershipOptional.isPresent()) {
+//            throw new TeamMembershipExistsException("User already joined the team.");
+//        }
+//        // else it doesn't exist, create new TeamMemebership
+//
+//
+//        var userOptional = userRepository.findByName(username);
+//        User user = userOptional.get();
+//        // from this point i suppose the user already exists.
+//
+//        TeamMembership tm = new TeamMembership(team, user);
+//        teamMembershipRepository.save(tm);
+//
+//        return user;
+//    }
+
+    @Override
     public User addUserToTeam(String username, String teamName) {
         // Find the Team object by name
-        var teamOptional = teamRepository.findByName(teamName);
-        Team team = teamOptional.get();
+        Team joinedTeam = teamRepository.findByName(teamName).orElseThrow(
+                () -> new TeamNotFoundException("Team with name '" + teamName + "' not found.")
+        );
 
-        // If exists, throw successfull exception
-        var teamMembershipOptional = teamMembershipRepository.findById(team.getId());
+        // Check if user is already part of the team
+        Optional<TeamMembership> teamMembership = teamMembershipRepository.findByTeamAndUser(joinedTeam.getId(), username);
 
-        if (teamMembershipOptional.isPresent()) {
-            throw new TeamMembershipExistsException("User already joined the team.");
+        if (teamMembership.isPresent()) {
+            throw new TeamMembershipExistsException("User with username '" + username + "' already joined the team '" + teamName + "'.");
         }
-        // else it doesn't exist, create new TeamMemebership
 
+        // Take the whole user object
+        User newUser = userRepository.findByName(username).orElseThrow(
+                () -> new UserNotFoundException("User with username '" + username + "' not found.")
+        );
 
-        var userOptional = userRepository.findByName(username);
-        User user = userOptional.get();
-        // from this point i suppose the user already exists.
-
-        TeamMembership tm = new TeamMembership(team, user);
+        // Create a new TeamMembership
+        TeamMembership tm = new TeamMembership(joinedTeam, newUser);
         teamMembershipRepository.save(tm);
 
-        return user;
+        return newUser;
     }
 
 }

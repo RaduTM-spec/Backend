@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface TeamMembershipRepository extends JpaRepository <TeamMembership, Long> {
@@ -21,4 +22,6 @@ public interface TeamMembershipRepository extends JpaRepository <TeamMembership,
     @Query("SELECT tm.team FROM TeamMembership tm WHERE tm.user.id = :userId")
     Team findTeamByUserId(Long userId);
 
+    @Query("SELECT tm FROM TeamMembership tm WHERE tm.team.id = :teamId  AND tm.user.name = :username  " )
+    Optional<TeamMembership> findByTeamAndUser(Long teamId, String username);
 }

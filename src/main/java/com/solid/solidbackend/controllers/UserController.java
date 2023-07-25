@@ -40,7 +40,7 @@ public class UserController {
         return ResponseEntity.ok(activities);
     }
 
-
+    // TODO this does not work and needs fixing
     @GetMapping("/activities/{userName}/{activityName}/teams")
     public ResponseEntity<List<Team>> getActivityTeams(@PathVariable String activityName) {
         log.info(" > Fetching teams registered in activity: {}", activityName);
@@ -73,7 +73,7 @@ public class UserController {
         return ResponseEntity.ok(joinedActivity);
     }
 
-
+    // TODO this needs careful refactoring. it returns an empty list of memebers even if memebers joined
     @GetMapping("/activities/{userName}/{activityName}/teams/{teamName}")
     public ResponseEntity<TeamDetails> getTeamDetailsFromAnActivity(@PathVariable String activityName,
                                                                     @PathVariable String teamName) {
@@ -82,4 +82,6 @@ public class UserController {
         TeamDetails td = teamService.getTeamDetailsFromAnActivity(activityName, teamName);
         return ResponseEntity.ok(td);
     }
+
+
 }

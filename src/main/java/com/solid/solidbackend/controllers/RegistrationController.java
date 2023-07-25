@@ -88,8 +88,8 @@ public class RegistrationController {
      * @param teamName
      * @return
      */
-    @PostMapping("/new/lead/{teamName}")
-    public ResponseEntity<User> createLeadAndAddLead(@RequestBody  String userName,
+    @PostMapping("/new/lead/{userName}/{teamName}")
+    public ResponseEntity<User> createLeadAndAddLead(@PathVariable  String userName,
                                                      @PathVariable String teamName) {
 
         logger.info(" > Creating a new lead with username: {} and adding to team: {}", userName, teamName);

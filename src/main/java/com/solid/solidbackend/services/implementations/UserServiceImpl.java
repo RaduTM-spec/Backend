@@ -3,6 +3,7 @@ package com.solid.solidbackend.services.implementations;
 
 import com.solid.solidbackend.entities.*;
 import com.solid.solidbackend.enums.Role;
+import com.solid.solidbackend.exceptions.TeamExistsException;
 import com.solid.solidbackend.exceptions.UserCreationException;
 import com.solid.solidbackend.exceptions.UserNotFoundException;
 import com.solid.solidbackend.repositories.apprepository.*;
@@ -11,6 +12,8 @@ import com.solid.solidbackend.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Optional;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -71,7 +74,13 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public User createAndAddLeadToTeam(String username, String teamName) {
         User newLead = createNewUser(username, Role.TEAM_LEADER);
-        return teamService.addUserToTeam(newLead.getName(), teamName);
+//        Optional<Team> newTeam = teamService.findTeamByName();
+//        if (newTeam.isPresent()) {
+//            throw new TeamExistsException("Team " + teamName + " cannot be crated because it already exists");
+//        }
+
+        Team joinedTeam = teamService.createTeam(teamName, newLead);
+        return teamService.addUserToTeam(username, teamName);
     }
 
     @Override
