@@ -84,7 +84,7 @@ public class RegistrationController {
      * 1. Creates a new leader
      * 2. If the team already exists, its bad
      *    Else it creates a team and a membership it;
-     * @param user
+     * @param userName
      * @param teamName
      * @return
      */

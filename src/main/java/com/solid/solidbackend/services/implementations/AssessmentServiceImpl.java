@@ -2,6 +2,8 @@ package com.solid.solidbackend.services.implementations;
 
 import com.solid.solidbackend.entities.Assessment;
 import com.solid.solidbackend.entities.User;
+import com.solid.solidbackend.exceptions.AssessmentNotFoundException;
+import com.solid.solidbackend.exceptions.UserNotFoundException;
 import com.solid.solidbackend.repositories.apprepository.AssessmentRepository;
 import com.solid.solidbackend.repositories.apprepository.UserRepository;
 import com.solid.solidbackend.services.AssessmentService;
@@ -41,13 +43,26 @@ public class AssessmentServiceImpl implements AssessmentService {
     }
 
     @Override
-    public List<Assessment> getAssessmentsByUserName(Long userName) {
-        return null;
+    public List<Assessment> getAssessmentsByUserName(String userName) {
+        var userOpt = userRepository.findByName(userName);
+        if(userOpt.isEmpty())
+        {
+            throw new UserNotFoundException(String.format("User %s not found when trying to get all of it's assessments", userName));
+        }
+
+        User user = userOpt.get();
+        var assessments = assessmentRepository.findAllByUserId(user.getId());
+        return assessments;
     }
 
     @Override
     public Assessment getAssessmentById(Long id) {
-        return null;
+        var assOpt = assessmentRepository.findById(id);
+        if(assOpt.isEmpty())
+        {
+            throw new AssessmentNotFoundException(String.format("Assessment with id %l not found.", id));
+        }
+        return assOpt.get();
     }
 
     @Override
@@ -58,7 +73,12 @@ public class AssessmentServiceImpl implements AssessmentService {
 
     @Override
     public List<Assessment> getUserAssessments(String userName) {
-        User user = userRepository.findByName(userName).get(); // TODO error checking
+        var userOpt = userRepository.findByName(userName);
+        if(userOpt.isEmpty())
+        {
+            throw new UserNotFoundException(String.format("User %s not found when trying to get all of his assessments.", userName));
+        }
+        User user = userOpt.get();
         return assessmentRepository.findAllByUserId(user.getId());
     }
 

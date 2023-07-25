@@ -61,7 +61,7 @@ public class UserController {
 
         log.info(" > Creating a new activity named {} for mentor: {}", mentorActivity.getName(), userName);
         Activity activity = activityService.createActivity(mentorActivity);
-        return ResponseEntity.ok(activity); // TODO idk what to return
+        return ResponseEntity.ok(activity);
     }
 
     @PutMapping("/activities/{userName}/join/{activityName}")

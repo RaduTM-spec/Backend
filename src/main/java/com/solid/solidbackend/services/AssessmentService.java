@@ -13,7 +13,7 @@ public interface AssessmentService {
 
     List<Assessment> getAssessmentsByUserId(Long userId);
 
-    List<Assessment> getAssessmentsByUserName(Long userName);
+    List<Assessment> getAssessmentsByUserName(String userName);
 
     Assessment getAssessmentById(Long id);
 
