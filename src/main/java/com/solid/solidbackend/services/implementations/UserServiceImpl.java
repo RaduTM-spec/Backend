@@ -6,11 +6,11 @@ import com.solid.solidbackend.enums.Role;
 import com.solid.solidbackend.exceptions.UserCreationException;
 import com.solid.solidbackend.exceptions.UserNotFoundException;
 import com.solid.solidbackend.repositories.apprepository.*;
+import com.solid.solidbackend.services.TeamService;
 import com.solid.solidbackend.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -20,16 +20,18 @@ public class UserServiceImpl implements UserService {
     private final TeamActivityRepository teamActivityRepository;
     private final TeamMembershipRepository teamMembershipRepository;
     private final ActivityRepository activityRepository;
+    private final TeamService teamService;
 
     @Autowired
     public UserServiceImpl(UserRepository userRepository, AssessmentRepository assessmentRepository,
                            TeamActivityRepository teamActivityRepository, TeamMembershipRepository teamMembershipRepository,
-                           ActivityRepository activityRepository) {
+                           ActivityRepository activityRepository, TeamService teamService) {
         this.userRepository = userRepository;
         this.assessmentRepository = assessmentRepository;
         this.teamActivityRepository = teamActivityRepository;
         this.teamMembershipRepository = teamMembershipRepository;
         this.activityRepository = activityRepository;
+        this.teamService = teamService;
     }
 
     @Override
@@ -55,20 +57,29 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
     public User createNewUser(String name, Role role) {
 
-        String pictureUrl = "https://robohash.org/"+ name + ".png";
+        String pictureUrl = "https://robohash.org/" + name.trim() + ".png";
 
         User newUser = new User(name, role, pictureUrl);
 
         return saveUser(newUser);
     }
 
+    @Override
+    @Transactional
+    public User createAndAddLeadToTeam(String username, String teamName) {
+        User newLead = createNewUser(username, Role.TEAM_LEADER);
+        return teamService.addUserToTeam(newLead.getName(), teamName);
+    }
 
-
-
-
-
+    @Override
+    @Transactional
+    public User createAndAddMemberToTeam(String username, String teamName) {
+        User newMember = createNewUser(username, Role.MEMBER);
+        return teamService.addUserToTeam(newMember.getName(), teamName);
+    }
 
 
 }

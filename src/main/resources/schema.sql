@@ -1,4 +1,4 @@
-INSERT INTO users (name, role, pictureUrl)
+INSERT INTO users (name, role, picture_url)
 VALUES
     ('John Doe', 'TEAM_LEADER', 'https://robohash.com/johndoe.jpg'),
     ('Jane Smith', 'MEMBER', 'https://robohash.com/janesmith.jpg'),

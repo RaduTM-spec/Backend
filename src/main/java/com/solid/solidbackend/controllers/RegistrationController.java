@@ -9,10 +9,10 @@ import com.solid.solidbackend.services.TeamService;
 import com.solid.solidbackend.services.implementations.TeamServiceImpl;
 import com.solid.solidbackend.services.UserService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-
 @RequestMapping("/")
 public class RegistrationController {
 
@@ -41,11 +41,11 @@ public class RegistrationController {
         return ResponseEntity.ok(x);
     }
 
-    @PostMapping("/new/member/{teamName}")
-    public ResponseEntity<User> createMemberAndAddMemberToTeam(@RequestBody String username, @PathVariable String teamName) {
-        User u = userService.createNewUser(username, Role.MEMBER);
-        teamService.addUserToTeam(u.getName(), teamName);
-        return ResponseEntity.ok(u);
+    @PostMapping("/new/member/{username}/{teamName}")
+    public ResponseEntity<User> createMemberAndAddMemberToTeam(@PathVariable String username, @PathVariable String teamName) {
+
+        User addedMember = userService.createAndAddMemberToTeam(username, teamName);
+        return ResponseEntity.ok(addedMember);
     }
 
     /**
@@ -58,8 +58,8 @@ public class RegistrationController {
      * @param dueDate
      * @return
      */
-    @PostMapping("/new/mentor/{activityName}/{dueDate}")
-    public ResponseEntity<User> createMentorAndAddMentor(@RequestBody  String userName,
+    @PostMapping("/new/mentor/{userName}/{activityName}/{dueDate}")
+    public ResponseEntity<User> createMentorAndAddMentor(@PathVariable  String userName,
                                                         @PathVariable String activityName,
                                                         @PathVariable String dueDate) {
 
@@ -83,10 +83,10 @@ public class RegistrationController {
     @PostMapping("/new/lead/{teamName}")
     public ResponseEntity<User> createLeadAndAddLead(@RequestBody  String userName,
                                                      @PathVariable String teamName) {
-        User u = userService.createNewUser(userName, Role.TEAM_LEADER);
-        Team team = teamService.createTeam(teamName, u);
-        teamService.addUserToTeam(u.getName(), team.getName());
-        return ResponseEntity.ok(u);
+
+        User user = userService.createAndAddLeadToTeam(userName, teamName);
+
+        return ResponseEntity.ok(user);
     }
 
 
