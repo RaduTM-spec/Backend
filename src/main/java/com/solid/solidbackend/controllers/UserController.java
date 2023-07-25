@@ -8,12 +8,14 @@ import com.solid.solidbackend.services.ActivityService;
 import com.solid.solidbackend.services.AssessmentService;
 import com.solid.solidbackend.services.TeamService;
 import com.solid.solidbackend.services.UserService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@Slf4j
 @RestController
 @RequestMapping("/")
 public class UserController {
@@ -33,6 +35,7 @@ public class UserController {
 
     @GetMapping("/activities/{userName}")
     public ResponseEntity<List<Activity>> getActivities(@PathVariable String userName) {
+        log.info(" > Fetching activities joined by user: {}", userName);
         List<Activity> activities = activityService.getUserActivities(userName);
         return ResponseEntity.ok(activities);
     }
@@ -40,46 +43,42 @@ public class UserController {
 
     @GetMapping("/activities/{userName}/{activityName}/teams")
     public ResponseEntity<List<Team>> getActivityTeams(@PathVariable String activityName) {
-        // Logic to fetch and return all teams linked to the specified activity
-
+        log.info(" > Fetching teams registered in activity: {}", activityName);
         List<Team> teams = teamService.getTeamsByActivity(activityName);
         return ResponseEntity.ok(teams);
     }
 
     @GetMapping("/activities/{userName}/assessments")
     public ResponseEntity<List<Assessment>> getUserAssessments(@PathVariable String userName) {
-        // Logic to fetch and return all activities and grades, as well as comments for the given user
-        // This is used only by the team lead and members
-        // returns an optional because the repository can return the value null
-
+        log.info(" > Fetching assessments for user: {}", userName);
         List<Assessment> assessments = assessmentService.getUserAssessments(userName);
         return ResponseEntity.ok(assessments);
     }
 
     @PostMapping("/activities/{userName}/create")
-    public ResponseEntity<Activity> createActivity(@RequestBody Activity mentorActivity) {
-        // Logic to create a new activity from the perspective of a mentor
-        // If no activity linked to the mentor exists in the database, prompt for creation
-        // Return appropriate response
+    public ResponseEntity<Activity> createActivity(@PathVariable String userName,
+                                                   @RequestBody Activity mentorActivity) {
+
+        log.info(" > Creating a new activity named {} for mentor: {}", mentorActivity.getName(), userName);
         Activity activity = activityService.createActivity(mentorActivity);
         return ResponseEntity.ok(activity); // TODO idk what to return
     }
 
     @PutMapping("/activities/{userName}/join/{activityName}")
-    public ResponseEntity<Activity> joinExistingActivity(@PathVariable String activityName) {
+    public ResponseEntity<Activity> joinExistingActivity(@PathVariable String userName,
+                                                         @PathVariable String activityName) {
 
-        // Self explanatory
-        // can only be used by team leader and mentor
-        // returns optional because the validation can go wrong
-
-        // TO DO 2;
-        return null;
+        log.info(" > Joining existing activity: {} by user: {}", activityName, userName);
+        Activity joinedActivity = activityService.joinActivity(userName, activityName);
+        return ResponseEntity.ok(joinedActivity);
     }
 
 
     @GetMapping("/activities/{userName}/{activityName}/teams/{teamName}")
     public ResponseEntity<TeamDetails> getTeamDetailsFromAnActivity(@PathVariable String activityName,
                                                                     @PathVariable String teamName) {
+
+        log.info(" > Fetching team details for activity: {} and team: {}", activityName, teamName);
         TeamDetails td = teamService.getTeamDetailsFromAnActivity(activityName, teamName);
         return ResponseEntity.ok(td);
     }

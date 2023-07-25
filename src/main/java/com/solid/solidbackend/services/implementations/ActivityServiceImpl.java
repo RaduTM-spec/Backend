@@ -2,9 +2,12 @@ package com.solid.solidbackend.services.implementations;
 
 import com.solid.solidbackend.entities.*;
 import com.solid.solidbackend.exceptions.NoActivityFoundException;
+import com.solid.solidbackend.exceptions.UserNotFoundException;
 import com.solid.solidbackend.repositories.apprepository.*;
 import com.solid.solidbackend.services.ActivityService;
 import com.solid.solidbackend.services.MentorActivityService;
+import com.solid.solidbackend.services.TeamActivityService;
+import com.solid.solidbackend.services.UserService;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -19,10 +22,11 @@ public class ActivityServiceImpl implements ActivityService {
     private final UserRepository userRepository;
     private final TeamActivityRepository teamActivityRepository;
     private final TeamMembershipRepository teamMembershipRepository;
+    private final TeamActivityService teamActivityService;
 
     public ActivityServiceImpl(ActivityRepository activityRepository, MentorActivityRepository mentorActivityRepository,
                                MentorActivityService mentorActivityService, UserRepository userRepository,
-                               TeamActivityRepository teamActivityRepository, TeamMembershipRepository teamMembershipRepository) {
+                               TeamActivityRepository teamActivityRepository, TeamMembershipRepository teamMembershipRepository, TeamActivityService teamActivityService) {
 
         this.activityRepository = activityRepository;
         this.mentorActivityService = mentorActivityService;
@@ -31,6 +35,7 @@ public class ActivityServiceImpl implements ActivityService {
         this.teamActivityRepository = teamActivityRepository;
         this.teamMembershipRepository = teamMembershipRepository;
 
+        this.teamActivityService = teamActivityService;
     }
 
     @Override
@@ -80,6 +85,27 @@ public class ActivityServiceImpl implements ActivityService {
 
         }
 
+    }
+
+    @Override
+    public Activity joinActivity(String userName, String activityName) {
+        // we get the activity that the lead wants to join
+        Activity joinedActivity = activityRepository.findActivityByName(activityName).orElseThrow(
+                () -> new NoActivityFoundException("Activity with name: " + activityName + " was not found")
+        );
+
+        // we get the user for its id to use at linking
+        User teamLead = userRepository.findByName(userName).orElseThrow(
+                () -> new UserNotFoundException("User with name: " + userName + " was not found")
+        );
+
+        // we get the team that the lead is in
+        Team joiningTeam = teamMembershipRepository.findTeamByUserId(teamLead.getId());
+
+        // we make a new link between the activity and the team of the lead
+        teamActivityService.joinActivityByTeam(joinedActivity, joiningTeam);
+
+        return joinedActivity;
     }
 
 }

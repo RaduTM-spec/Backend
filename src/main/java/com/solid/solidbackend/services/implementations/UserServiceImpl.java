@@ -60,7 +60,7 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public User createNewUser(String name, Role role) {
 
-        String pictureUrl = "https://robohash.org/" + name.trim() + ".png";
+        String pictureUrl = "https://robohash.org/" + name + ".png";
 
         User newUser = new User(name, role, pictureUrl);
 

@@ -8,13 +8,19 @@ import com.solid.solidbackend.services.MentorActivityService;
 import com.solid.solidbackend.services.TeamService;
 import com.solid.solidbackend.services.implementations.TeamServiceImpl;
 import com.solid.solidbackend.services.UserService;
+import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
+@Slf4j
 @RestController
 @RequestMapping("/")
 public class RegistrationController {
+
+    private static final Logger logger = LoggerFactory.getLogger(RegistrationController.class);
 
     // here you inject the service beans that you use
     private final UserService userService;
@@ -22,8 +28,8 @@ public class RegistrationController {
     private final ActivityService activityService;
 
 
-    public RegistrationController(UserService userService, TeamServiceImpl teamService, MentorActivityService mentorActivityService, ActivityService activityService, ActivityService activityService1)
-    {
+    public RegistrationController(UserService userService, TeamServiceImpl teamService, MentorActivityService mentorActivityService,
+                                  ActivityService activityService, ActivityService activityService1) {
         this.userService = userService;
         this.teamService = teamService;
         this.activityService = activityService1;
@@ -32,18 +38,21 @@ public class RegistrationController {
 
     @PostMapping("/")
     public ResponseEntity<User> authenticateUser(String name) {
-        // Logic to handle an existing user authentication
-        // This appears if users selects he is an existing user
-        // We consider that if the user sends this post, 100% he exists in the database (from IBM specs)
-        // So this will always retrun a user obj
+
+        logger.info(" > Authenticating existing user: {}", name);
 
         User x = userService.getUserByName(name);
+
+        logger.info(" > User authenticated successfully!");
+
         return ResponseEntity.ok(x);
     }
 
     @PostMapping("/new/member/{username}/{teamName}")
-    public ResponseEntity<User> createMemberAndAddMemberToTeam(@PathVariable String username, @PathVariable String teamName) {
+    public ResponseEntity<User> createMemberAndAddMemberToTeam(@PathVariable String username,
+                                                               @PathVariable String teamName) {
 
+        logger.info(" > Creating a new member with username: {} and adding to team: {}", username, teamName);
         User addedMember = userService.createAndAddMemberToTeam(username, teamName);
         return ResponseEntity.ok(addedMember);
     }
@@ -63,11 +72,10 @@ public class RegistrationController {
                                                         @PathVariable String activityName,
                                                         @PathVariable String dueDate) {
 
+        logger.info(" > Creating a new mentor with username: {}", userName);
         User newMentor = userService.createNewUser(userName, Role.MENTOR);
-
         // to handle the new mentor linking to existing/new activity
         this.activityService.addNewMentorToActivity(activityName, newMentor, dueDate);
-
         return ResponseEntity.ok(newMentor);
     }
 
@@ -84,8 +92,8 @@ public class RegistrationController {
     public ResponseEntity<User> createLeadAndAddLead(@RequestBody  String userName,
                                                      @PathVariable String teamName) {
 
+        logger.info(" > Creating a new lead with username: {} and adding to team: {}", userName, teamName);
         User user = userService.createAndAddLeadToTeam(userName, teamName);
-
         return ResponseEntity.ok(user);
     }
 
