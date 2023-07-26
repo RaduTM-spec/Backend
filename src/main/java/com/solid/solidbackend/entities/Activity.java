@@ -16,7 +16,7 @@ public class Activity {
 
     private String name;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "creatorId", referencedColumnName = "id")
     private User creator;
 

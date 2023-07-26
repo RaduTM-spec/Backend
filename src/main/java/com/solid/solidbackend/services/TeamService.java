@@ -12,7 +12,7 @@ public interface TeamService {
 
     public User addUserToTeam(String username, String teamName);
 
-    public TeamDetails getTeamDetailsFromAnActivity(String activityName, String teamname);
+    public TeamDetails getTeamDetailsFromAnActivity(String activityName, String teamName);
 
     public Team createTeam(String teamName, User teamLeader);
 

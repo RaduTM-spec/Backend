@@ -6,6 +6,7 @@ import com.solid.solidbackend.exceptions.TeamMembershipExistsException;
 import com.solid.solidbackend.exceptions.TeamNotFoundException;
 import com.solid.solidbackend.exceptions.UserNotFoundException;
 import com.solid.solidbackend.repositories.apprepository.*;
+import com.solid.solidbackend.services.ActivityService;
 import com.solid.solidbackend.services.TeamService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Service;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class TeamServiceImpl implements TeamService {
@@ -23,15 +25,18 @@ public class TeamServiceImpl implements TeamService {
     private final UserRepository userRepository;
     private final AssessmentRepository assessmentRepository;
     private final ActivityRepository activityRepository;
+    private final ActivityService activityService;
 
     @Autowired
-    public TeamServiceImpl(TeamRepository teamRepository, TeamActivityRepository teamActivityRepository, TeamMembershipRepository teamMembershipRepository, UserRepository userRepository, AssessmentRepository assessmentRepository, ActivityRepository activityRepository) {
+    public TeamServiceImpl(TeamRepository teamRepository, TeamActivityRepository teamActivityRepository, TeamMembershipRepository teamMembershipRepository, UserRepository userRepository, AssessmentRepository assessmentRepository, ActivityRepository activityRepository, ActivityService activityService) {
         this.teamRepository = teamRepository;
         this.teamActivityRepository = teamActivityRepository;
         this.teamMembershipRepository = teamMembershipRepository;
         this.userRepository = userRepository;
         this.assessmentRepository = assessmentRepository;
         this.activityRepository = activityRepository;
+
+        this.activityService = activityService;
     }
 
     public Team getTeamByName(String name) {
@@ -56,7 +61,6 @@ public class TeamServiceImpl implements TeamService {
 
     public TeamDetails getTeamDetailsFromAnActivity(String activityName, String teamname) {
         List<User> members = teamMembershipRepository.findAllUsersByTeamName(teamname);
-
 
         // for each member, i get all assessments. From there i extract all grades and attendances.
         List<Float> gradesOfMembers = new LinkedList<>();
@@ -88,13 +92,23 @@ public class TeamServiceImpl implements TeamService {
         if (teamGrade != 0) // check for division by 0
             teamGrade /= gradesOfMembers.size();
 
-        return new TeamDetails(members, gradesOfMembers, attendancesOfMembers, teamGrade);
+        return new TeamDetails(members, gradesOfMembers, attendancesOfMembers, teamGrade, members.size());
     }
 
     @Override
     public List<Team> getTeamsByActivity(String activityName) {
-        List<TeamActivity> teamActivities = teamActivityRepository.findAllTeamsByActivityName(activityName);
-        return teamActivities.stream().map(TeamActivity::getTeam).toList();
+//        List<TeamActivity> teamActivities = teamActivityRepository.findAllTeamsByActivityName(activityName);
+//        return teamActivities.stream().map(TeamActivity::getTeam).toList();
+
+        Activity selectedActivity = activityService.getActivityByName(activityName);
+//        return teamActivityRepository.findAllTeamsByActivityId(selectedActivity.getId());
+
+        List<TeamActivity> teamActivities = teamActivityRepository.findByActivity_Id(selectedActivity.getId());
+        return teamActivities.stream().map(TeamActivity::getTeam).collect(Collectors.toList());
+
+//        return teamActivities.stream()
+//                .map(teamActivity -> new TeamDTO(teamActivity.getTeam().getId(), teamActivity.getTeam().getName()))
+//                .collect(Collectors.toList());
     }
 
 //    public User addUserToTeam(String username, String teamName) {

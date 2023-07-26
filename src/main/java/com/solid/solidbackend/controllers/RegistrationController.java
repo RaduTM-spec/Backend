@@ -8,6 +8,9 @@ import com.solid.solidbackend.services.MentorActivityService;
 import com.solid.solidbackend.services.TeamService;
 import com.solid.solidbackend.services.implementations.TeamServiceImpl;
 import com.solid.solidbackend.services.UserService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,6 +21,7 @@ import org.springframework.web.bind.annotation.*;
 @Slf4j
 @RestController
 @RequestMapping("/")
+
 public class RegistrationController {
 
     private static final Logger logger = LoggerFactory.getLogger(RegistrationController.class);
@@ -36,18 +40,17 @@ public class RegistrationController {
 
     }
 
+    @Operation(summary = "authenticate existing user")
     @PostMapping("/")
     public ResponseEntity<User> authenticateUser(String name) {
 
         logger.info(" > Authenticating existing user: {}", name);
-
         User x = userService.getUserByName(name);
-
         logger.info(" > User authenticated successfully!");
-
         return ResponseEntity.ok(x);
     }
 
+    @Operation(summary = "creates new member and enrolls him in an existing team")
     @PostMapping("/new/member/{username}/{teamName}")
     public ResponseEntity<User> createMemberAndAddMemberToTeam(@PathVariable String username,
                                                                @PathVariable String teamName) {
@@ -67,6 +70,7 @@ public class RegistrationController {
      * @param dueDate
      * @return
      */
+    @Operation(summary = "creates new mentor and enrolls him in new or existing activity")
     @PostMapping("/new/mentor/{userName}/{activityName}/{dueDate}")
     public ResponseEntity<User> createMentorAndAddMentor(@PathVariable  String userName,
                                                         @PathVariable String activityName,
@@ -88,6 +92,7 @@ public class RegistrationController {
      * @param teamName
      * @return
      */
+    @Operation(summary = "creates new lead and creates a new team for him")
     @PostMapping("/new/lead/{userName}/{teamName}")
     public ResponseEntity<User> createLeadAndAddLead(@PathVariable  String userName,
                                                      @PathVariable String teamName) {

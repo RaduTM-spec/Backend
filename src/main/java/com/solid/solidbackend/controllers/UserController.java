@@ -8,6 +8,7 @@ import com.solid.solidbackend.services.ActivityService;
 import com.solid.solidbackend.services.AssessmentService;
 import com.solid.solidbackend.services.TeamService;
 import com.solid.solidbackend.services.UserService;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -33,6 +34,7 @@ public class UserController {
         this.activityService = activityService;
     }
 
+    @Operation(summary = "gets all activities enrolled by the user")
     @GetMapping("/activities/{userName}")
     public ResponseEntity<List<Activity>> getActivities(@PathVariable String userName) {
         log.info(" > Fetching activities joined by user: {}", userName);
@@ -40,7 +42,7 @@ public class UserController {
         return ResponseEntity.ok(activities);
     }
 
-    // TODO this does not work and needs fixing
+    @Operation(summary = "gets all teams enrolled in a specific activity")
     @GetMapping("/activities/{userName}/{activityName}/teams")
     public ResponseEntity<List<Team>> getActivityTeams(@PathVariable String activityName) {
         log.info(" > Fetching teams registered in activity: {}", activityName);
@@ -48,6 +50,7 @@ public class UserController {
         return ResponseEntity.ok(teams);
     }
 
+    @Operation(summary = "gets all assessments received by a user in activities")
     @GetMapping("/activities/{userName}/assessments")
     public ResponseEntity<List<Assessment>> getUserAssessments(@PathVariable String userName) {
         log.info(" > Fetching assessments for user: {}", userName);
@@ -55,6 +58,7 @@ public class UserController {
         return ResponseEntity.ok(assessments);
     }
 
+    @Operation(summary = "creates and enrolls the user in an activity")
     @PostMapping("/activities/{userName}/create")
     public ResponseEntity<Activity> createActivity(@PathVariable String userName,
                                                    @RequestBody Activity mentorActivity) {
@@ -64,6 +68,7 @@ public class UserController {
         return ResponseEntity.ok(activity);
     }
 
+    @Operation(summary = "joins the team of a user in an existing activity")
     @PutMapping("/activities/{userName}/join/{activityName}")
     public ResponseEntity<Activity> joinExistingActivity(@PathVariable String userName,
                                                          @PathVariable String activityName) {
@@ -73,14 +78,23 @@ public class UserController {
         return ResponseEntity.ok(joinedActivity);
     }
 
+
     // TODO this needs careful refactoring. it returns an empty list of memebers even if memebers joined
+    @Operation(summary = "gets all the details of the team and its performance in an activity")
     @GetMapping("/activities/{userName}/{activityName}/teams/{teamName}")
     public ResponseEntity<TeamDetails> getTeamDetailsFromAnActivity(@PathVariable String activityName,
-                                                                    @PathVariable String teamName) {
+                                                                    @PathVariable String teamName,
+                                                                    @PathVariable String userName) {
 
         log.info(" > Fetching team details for activity: {} and team: {}", activityName, teamName);
         TeamDetails td = teamService.getTeamDetailsFromAnActivity(activityName, teamName);
         return ResponseEntity.ok(td);
+    }
+
+    @Operation(summary = "creates a new session assessment for a team in an activity")
+    @PostMapping("/activities/{userName}/{activityName}/teams/{teamName}/assessment")
+    public ResponseEntity <TeamDetails> createNewSessionAssessmentOnTeam() {
+        return null;
     }
 
 

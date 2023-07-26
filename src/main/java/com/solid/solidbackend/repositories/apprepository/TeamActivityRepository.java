@@ -10,10 +10,17 @@ import java.util.List;
 
 public interface TeamActivityRepository extends JpaRepository<TeamActivity, Long> {
 
-    @Query("SELECT ta FROM TeamActivity ta WHERE ta.activity.id = :activityId")
-    List<Team> findAllTeamsByActivityId(Long activityId);
+//    @Query("SELECT ta.team FROM TeamActivity ta WHERE ta.activity.id = :activityId")
 
-    @Query("SELECT ta FROM TeamActivity ta WHERE ta.activity.name = :activityName")
+//    @Query("SELECT t FROM Team t " +
+//            "JOIN TeamActivity ta ON t.id = ta.teamId " +
+//            "WHERE ta.activityId = :activityId")
+//    List<Team> findAllTeamsByActivityId(Long activityId);
+
+    List<TeamActivity> findByActivity_Id(Long activityId);
+
+
+    @Query("SELECT ta.team FROM TeamActivity ta WHERE ta.activity.name = :activityName")
     List<TeamActivity> findAllTeamsByActivityName(String activityName);
 
     @Query("SELECT ta FROM TeamActivity ta WHERE ta.team.id = :teamId")

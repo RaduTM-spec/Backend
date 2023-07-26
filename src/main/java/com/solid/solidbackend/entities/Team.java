@@ -19,7 +19,7 @@ public class Team {
     @Column(nullable = false)
     private String name;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "leaderId", nullable = false, referencedColumnName = "id")
     private User leader;
 
