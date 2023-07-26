@@ -5,7 +5,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 
 @ResponseStatus(HttpStatus.BAD_REQUEST)
 public class ActivityAlreadyExistsException extends RuntimeException {
-    public ActivityAlreadyExistsException(String message) {
-        super(message);
+    public ActivityAlreadyExistsException(String activityName) {
+        super("Activity with name `" + activityName + "` was not found");
     }
 }

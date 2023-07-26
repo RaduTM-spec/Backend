@@ -8,14 +8,13 @@ import java.util.List;
 
 public interface ActivityService {
 
-
-    Activity createActivity(Activity activity);
-
     Activity getActivityByName(String activityName);
 
     List<Activity> getUserActivities(String userName);
 
     MentorActivity addNewMentorToActivity(String activityName, User newMentor, String dueDate);
+
+    Activity createAndJoinActivity(String userName, Activity activity);
 
     Activity joinActivity(String userName, String activityName);
 }

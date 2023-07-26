@@ -41,15 +41,18 @@ public class UserController {
 
     @Operation(summary = "gets all teams enrolled in a specific activity")
     @GetMapping("/activities/{userName}/{activityName}/teams")
-    public ResponseEntity<List<Team>> getActivityTeams(@PathVariable String activityName) {
+    public ResponseEntity<List<Team>> getActivityTeams(@PathVariable String userName,
+                                                       @PathVariable String activityName) {
+        userService.checkIfUserIsMentor(userName);
         log.info(" > Fetching teams registered in activity: {}", activityName);
-        List<Team> teams = teamService.getTeamsByActivity(activityName);
+        List<Team> teams = teamService.getTeamsByActivity(userName, activityName);
         return ResponseEntity.ok(teams);
     }
 
     @Operation(summary = "gets all assessments received by a user in activities")
     @GetMapping("/activities/{userName}/assessments")
     public ResponseEntity<List<Assessment>> getUserAssessments(@PathVariable String userName) {
+
         log.info(" > Fetching assessments for user: {}", userName);
         List<Assessment> assessments = assessmentService.getUserAssessments(userName);
         return ResponseEntity.ok(assessments);
@@ -60,16 +63,18 @@ public class UserController {
     public ResponseEntity<Activity> createActivity(@PathVariable String userName,
                                                    @RequestBody Activity mentorActivity) {
 
+        userService.checkIfUserIsMentor(userName);
         log.info(" > Creating a new activity named {} for mentor: {}", mentorActivity.getName(), userName);
-        Activity activity = activityService.createActivity(mentorActivity);
+        Activity activity = activityService.createAndJoinActivity(userName, mentorActivity);
         return ResponseEntity.ok(activity);
     }
 
-    @Operation(summary = "joins the team of a user in an existing activity")
+    @Operation(summary = "joins the user or the team of a user in an existing activity")
     @PutMapping("/activities/{userName}/join/{activityName}")
     public ResponseEntity<Activity> joinExistingActivity(@PathVariable String userName,
                                                          @PathVariable String activityName) {
 
+        // no need to check role here because the JoinActivity method`s logic handle all possible ROLE cases
         log.info(" > Joining existing activity: {} by user: {}", activityName, userName);
         Activity joinedActivity = activityService.joinActivity(userName, activityName);
         return ResponseEntity.ok(joinedActivity);
@@ -79,10 +84,11 @@ public class UserController {
     // TODO this needs careful refactoring. it returns an empty list of members even if members joined
     @Operation(summary = "gets all the details of the team and its performance in an activity")
     @GetMapping("/activities/{userName}/{activityName}/teams/{teamName}")
-    public ResponseEntity<TeamDetails> getTeamDetailsFromAnActivity(@PathVariable String activityName,
-                                                                    @PathVariable String teamName,
-                                                                    @PathVariable String userName) {
+    public ResponseEntity<TeamDetails> getTeamDetailsFromAnActivity(@PathVariable String userName,
+                                                                    @PathVariable String activityName,
+                                                                    @PathVariable String teamName) {
 
+        userService.checkIfUserIsMentor(userName);
         log.info(" > Fetching team details for activity: {} and team: {}", activityName, teamName);
         TeamDetails td = teamService.getTeamDetailsFromAnActivity(activityName, teamName);
         return ResponseEntity.ok(td);
@@ -94,12 +100,11 @@ public class UserController {
                                                                          @PathVariable String activityName,
                                                                          @PathVariable String teamName,
                                                                          @RequestBody List<Assessment> newAssessments) {
+        userService.checkIfUserIsMentor(userName);
         User mentor = userService.getUserByName(userName);
         assessmentService.saveAssessmentsToActivity(activityName, mentor, newAssessments);
-
         TeamDetails updatedTeamDetails = teamService.getTeamDetailsFromAnActivity(activityName, teamName);
         return ResponseEntity.ok(updatedTeamDetails);
     }
-
 
 }

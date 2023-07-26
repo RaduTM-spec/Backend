@@ -3,6 +3,7 @@ package com.solid.solidbackend.services.implementations;
 
 import com.solid.solidbackend.entities.*;
 import com.solid.solidbackend.enums.Role;
+import com.solid.solidbackend.exceptions.RoleNotAllowedException;
 import com.solid.solidbackend.exceptions.UserCreationException;
 import com.solid.solidbackend.exceptions.UserNotFoundException;
 import com.solid.solidbackend.repositories.apprepository.*;
@@ -27,7 +28,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public User getUserByName(String name) throws UserNotFoundException {
         return userRepository.findByName(name)
-                .orElseThrow(() -> new UserNotFoundException("User not found with name: " + name));
+                .orElseThrow(() -> new UserNotFoundException(name));
     }
 
     @Override
@@ -35,7 +36,7 @@ public class UserServiceImpl implements UserService {
 
         // we check if the user already exists by name
         if (userRepository.findByName(user.getName()).isPresent()) {
-            throw new UserCreationException("Username already exists: " + user.getName());
+            throw new UserCreationException(user.getName());
         }
 
         return userRepository.save(user);
@@ -73,6 +74,24 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public void checkIfUserIsMentor(String userName) {
+        User mentor = getUserByName(userName);
+        if (mentor.getRole() != Role.MENTOR) throw new RoleNotAllowedException("MEMBERS");
+    }
+
+    @Override
+    public void checkIfUserIsLead(String userName) {
+        User mentor = getUserByName(userName);
+        if (mentor.getRole() != Role.MENTOR) throw new RoleNotAllowedException("LEADS");
+    }
+
+    @Override
+    public void checkIfUserIsMentorOrLead(String userName) {
+        User mentor = getUserByName(userName);
+        if (mentor.getRole() != Role.MENTOR) throw new RoleNotAllowedException("MENTORS and LEADS");
+    }
+
+    @Override
     public Role checkUserRole(User user) {
 
         return switch (user.getRole()) {
@@ -81,6 +100,7 @@ public class UserServiceImpl implements UserService {
             case MENTOR -> Role.MENTOR;
         };
     }
+
 
 
 }

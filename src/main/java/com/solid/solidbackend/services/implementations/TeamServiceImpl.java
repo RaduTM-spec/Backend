@@ -4,6 +4,7 @@ import com.solid.solidbackend.entities.*;
 import com.solid.solidbackend.exceptions.*;
 import com.solid.solidbackend.repositories.apprepository.*;
 import com.solid.solidbackend.services.TeamService;
+import com.solid.solidbackend.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -37,7 +38,7 @@ public class TeamServiceImpl implements TeamService {
         Optional<Team> teamOptional = teamRepository.findByName(name);
 
         if (!teamOptional.isPresent())
-            throw new TeamNotFoundException(String.format("Team %s not found when searched by name.", name));
+            throw new TeamNotFoundException(name);
 
         return teamOptional.get();
     }
@@ -47,7 +48,7 @@ public class TeamServiceImpl implements TeamService {
         Optional<Team> teamOptional = teamRepository.findByName(teamName);
 
         if(teamOptional.isPresent())
-            throw new TeamExistsException("Team already exists on creating.");
+            throw new TeamExistsException(teamName);
 
         Team team = new Team(teamName, teamLeader);
         return teamRepository.save(team);
@@ -90,9 +91,10 @@ public class TeamServiceImpl implements TeamService {
     }
 
     @Override
-    public List<Team> getTeamsByActivity(String activityName) {
+    public List<Team> getTeamsByActivity(String username, String activityName) {
+
         Activity selectedActivity = activityRepository.findActivityByName(activityName).orElseThrow(
-                () -> new NoActivityFoundException("No activity with name " + activityName + " was found")
+                () -> new NoActivityFoundException(activityName)
         );
         List<TeamActivity> teamActivities = teamActivityRepository.findByActivity_Id(selectedActivity.getId());
         return teamActivities.stream().map(TeamActivity::getTeam).collect(Collectors.toList());
@@ -136,7 +138,7 @@ public class TeamServiceImpl implements TeamService {
         }
         // Take the whole user object
         User newUser = userRepository.findByName(username).orElseThrow(
-                () -> new UserNotFoundException("User with username '" + username + "' not found.")
+                () -> new UserNotFoundException(username)
         );
         // Create a new TeamMembership
         TeamMembership tm = new TeamMembership(joinedTeam, newUser);

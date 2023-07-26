@@ -4,9 +4,7 @@ import com.solid.solidbackend.entities.Activity;
 import com.solid.solidbackend.entities.Assessment;
 import com.solid.solidbackend.entities.User;
 import com.solid.solidbackend.enums.Role;
-import com.solid.solidbackend.exceptions.AssessmentNotFoundException;
-import com.solid.solidbackend.exceptions.MembersNotAllowedException;
-import com.solid.solidbackend.exceptions.UserNotFoundException;
+import com.solid.solidbackend.exceptions.*;
 import com.solid.solidbackend.repositories.apprepository.ActivityRepository;
 import com.solid.solidbackend.repositories.apprepository.AssessmentRepository;
 import com.solid.solidbackend.repositories.apprepository.UserRepository;
@@ -37,41 +35,27 @@ public class AssessmentServiceImpl implements AssessmentService {
 
     @Override
     public List<Assessment> getAssessmentsByUsername(String userName) {
-        var userOpt = userRepository.findByName(userName);
-        if(userOpt.isEmpty())
-        {
-            throw new UserNotFoundException(String.format("User %s not found when trying to get all of it's assessments", userName));
-        }
+        User user = userRepository.findByName(userName).orElseThrow(
+                () -> new UserNotFoundException(userName)
+        );
 
-        User user = userOpt.get();
-        var assessments = assessmentRepository.findAllByUserId(user.getId());
-        return assessments;
+        return assessmentRepository.findAllByUserId(user.getId());
     }
 
     @Override
     public Assessment getAssessmentById(Long id) {
-        var assOpt = assessmentRepository.findById(id);
-        if(assOpt.isEmpty())
-        {
-            throw new AssessmentNotFoundException(String.format("Assessment with id %l not found.", id));
-        }
-        return assOpt.get();
-    }
-
-    @Override
-    public Assessment createAssessment(Assessment assessment) {
-        return null;
+        return assessmentRepository.findById(id).orElseThrow(
+                () -> new AssessmentNotFoundByIdException(id.toString())
+        );
     }
 
 
     @Override
     public List<Assessment> getUserAssessments(String userName) {
-        var userOpt = userRepository.findByName(userName);
-        if(userOpt.isEmpty())
-        {
-            throw new UserNotFoundException(String.format("User %s not found when trying to get all of his assessments.", userName));
-        }
-        User user = userOpt.get();
+        User user = userRepository.findByName(userName).orElseThrow(
+                () -> new UserNotFoundException(userName)
+        );
+
         return assessmentRepository.findAllByUserId(user.getId());
     }
 
@@ -80,19 +64,19 @@ public class AssessmentServiceImpl implements AssessmentService {
     @Transactional
     public void saveAssessmentsToActivity(String activityName, User mentor, List<Assessment> newAssessments) {
 
-
-        if (userService.checkUserRole(mentor) != Role.MENTOR) {
-            throw new MembersNotAllowedException("Only MENTORS are allowed to send session assessments");
-        }
+//
+//        if (userService.checkUserRole(mentor) != Role.MENTOR) {
+//            throw new RoleNotAllowedException("Only MENTORS are allowed to send session assessments");
+//        }
 
         Activity activity = activityRepository.findActivityByName(activityName)
-                .orElseThrow(() -> new IllegalArgumentException("Activity not found"));
+                .orElseThrow(() -> new NoActivityFoundException(activityName));
 
         for (Assessment assessment : newAssessments) {
             assessment.setActivity(activity);
 
             User teamMember = userRepository.findByName(assessment.getUser().getName()).orElseThrow(
-                    () -> new UserNotFoundException("No user with name: "+ assessment.getUser().getName() + " was found"));
+                    () -> new UserNotFoundException(assessment.getUser().getName()));
 
             assessment.setMentor(mentor);
             assessment.setUser(teamMember);

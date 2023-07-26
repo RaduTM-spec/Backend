@@ -5,7 +5,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 
 @ResponseStatus(HttpStatus.BAD_REQUEST)
 public class AlreadyJoinedActivityException  extends RuntimeException{
-    public AlreadyJoinedActivityException(String message) {
-        super(message);
+    public AlreadyJoinedActivityException(String activityName) {
+        super("Activity with name `" + activityName + "` was already joined!");
     }
 }

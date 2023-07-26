@@ -5,7 +5,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 
 @ResponseStatus(HttpStatus.BAD_REQUEST)
 public class AssessmentNotFoundException extends RuntimeException{
-    public AssessmentNotFoundException(String message) {
-        super(message);
+    public AssessmentNotFoundException(String assessmentName) {
+        super("Assessment with name `" + assessmentName + "` was not found!");
     }
 }

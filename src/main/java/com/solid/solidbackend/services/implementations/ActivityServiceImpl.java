@@ -1,8 +1,7 @@
 package com.solid.solidbackend.services.implementations;
 
 import com.solid.solidbackend.entities.*;
-import com.solid.solidbackend.enums.Role;
-import com.solid.solidbackend.exceptions.MembersNotAllowedException;
+import com.solid.solidbackend.exceptions.RoleNotAllowedException;
 import com.solid.solidbackend.exceptions.NoActivityFoundException;
 import com.solid.solidbackend.exceptions.UserNotFoundException;
 import com.solid.solidbackend.repositories.apprepository.*;
@@ -43,8 +42,15 @@ public class ActivityServiceImpl implements ActivityService {
     }
 
     @Override
-    public Activity createActivity(Activity activity) {
-        return activityRepository.save(activity);
+    public Activity createAndJoinActivity(String userName, Activity activity) {
+
+        User mentor = userService.getUserByName(userName);
+        Activity newActivity = new Activity();
+        newActivity.setName(activity.getName());
+        newActivity.setCreator(mentor);
+        newActivity.setDeadline(activity.getDeadline());
+
+        return activityRepository.save(newActivity);
     }
 
     @Override
@@ -111,7 +117,7 @@ public class ActivityServiceImpl implements ActivityService {
                 teamActivityService.joinActivityByTeam(joinedActivity, joiningTeam);
             }
             default -> {
-                throw new MembersNotAllowedException("Only MENTORS and LEADS can join an activity");
+                throw new RoleNotAllowedException("MENTORS and LEADS");
             }
         }
 

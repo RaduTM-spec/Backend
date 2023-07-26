@@ -15,7 +15,6 @@ public interface AssessmentService {
 
     Assessment getAssessmentById(Long id);
 
-    Assessment createAssessment(Assessment assessment);
 
     List<Assessment> getUserAssessments(String userName);
 

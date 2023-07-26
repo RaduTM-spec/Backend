@@ -5,7 +5,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 
 @ResponseStatus(HttpStatus.BAD_REQUEST)
 public class TeamNotFoundException extends RuntimeException{
-    public TeamNotFoundException(String message) {
-        super(message);
+    public TeamNotFoundException(String teamName) {
+        super("No team with name `" + teamName + "` was found!");
     }
 }

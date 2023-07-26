@@ -1,13 +1,8 @@
 package com.solid.solidbackend.services;
 
-import com.solid.solidbackend.entities.Assessment;
 import com.solid.solidbackend.entities.User;
-import com.solid.solidbackend.entities.Activity;
 import com.solid.solidbackend.enums.Role;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
-import java.util.Optional;
 
 @Service
 public interface UserService {
@@ -21,6 +16,12 @@ public interface UserService {
     User createAndAddLeadToTeam(String username, String teamName);
 
     User createAndAddMemberToTeam(String username, String teamName);
+
+    void checkIfUserIsMentor(String userName);
+
+    void checkIfUserIsLead(String userName);
+
+    void checkIfUserIsMentorOrLead(String userName);
 
     Role checkUserRole(User user);
 }
