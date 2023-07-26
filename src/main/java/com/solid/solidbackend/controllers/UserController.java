@@ -1,9 +1,6 @@
 package com.solid.solidbackend.controllers;
 
-import com.solid.solidbackend.entities.Activity;
-import com.solid.solidbackend.entities.Assessment;
-import com.solid.solidbackend.entities.Team;
-import com.solid.solidbackend.entities.TeamDetails;
+import com.solid.solidbackend.entities.*;
 import com.solid.solidbackend.services.ActivityService;
 import com.solid.solidbackend.services.AssessmentService;
 import com.solid.solidbackend.services.TeamService;
@@ -58,7 +55,7 @@ public class UserController {
         return ResponseEntity.ok(assessments);
     }
 
-    @Operation(summary = "creates and enrolls the user in an activity")
+    @Operation(summary = "creates an activity and enrolls the user in it")
     @PostMapping("/activities/{userName}/create")
     public ResponseEntity<Activity> createActivity(@PathVariable String userName,
                                                    @RequestBody Activity mentorActivity) {
@@ -79,7 +76,7 @@ public class UserController {
     }
 
 
-    // TODO this needs careful refactoring. it returns an empty list of memebers even if memebers joined
+    // TODO this needs careful refactoring. it returns an empty list of members even if members joined
     @Operation(summary = "gets all the details of the team and its performance in an activity")
     @GetMapping("/activities/{userName}/{activityName}/teams/{teamName}")
     public ResponseEntity<TeamDetails> getTeamDetailsFromAnActivity(@PathVariable String activityName,
@@ -93,8 +90,15 @@ public class UserController {
 
     @Operation(summary = "creates a new session assessment for a team in an activity")
     @PostMapping("/activities/{userName}/{activityName}/teams/{teamName}/assessment")
-    public ResponseEntity <TeamDetails> createNewSessionAssessmentOnTeam() {
-        return null;
+    public ResponseEntity<TeamDetails> createNewSessionAssessmentOnTeam(@PathVariable String userName,
+                                                                         @PathVariable String activityName,
+                                                                         @PathVariable String teamName,
+                                                                         @RequestBody List<Assessment> newAssessments) {
+        User mentor = userService.getUserByName(userName);
+        assessmentService.saveAssessmentsToActivity(activityName, mentor, newAssessments);
+
+        TeamDetails updatedTeamDetails = teamService.getTeamDetailsFromAnActivity(activityName, teamName);
+        return ResponseEntity.ok(updatedTeamDetails);
     }
 
 

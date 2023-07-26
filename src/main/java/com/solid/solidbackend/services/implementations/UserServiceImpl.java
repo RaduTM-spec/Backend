@@ -3,7 +3,6 @@ package com.solid.solidbackend.services.implementations;
 
 import com.solid.solidbackend.entities.*;
 import com.solid.solidbackend.enums.Role;
-import com.solid.solidbackend.exceptions.TeamExistsException;
 import com.solid.solidbackend.exceptions.UserCreationException;
 import com.solid.solidbackend.exceptions.UserNotFoundException;
 import com.solid.solidbackend.repositories.apprepository.*;
@@ -13,27 +12,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Optional;
-
 @Service
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
-    private final AssessmentRepository assessmentRepository;
-    private final TeamActivityRepository teamActivityRepository;
-    private final TeamMembershipRepository teamMembershipRepository;
-    private final ActivityRepository activityRepository;
     private final TeamService teamService;
 
     @Autowired
-    public UserServiceImpl(UserRepository userRepository, AssessmentRepository assessmentRepository,
-                           TeamActivityRepository teamActivityRepository, TeamMembershipRepository teamMembershipRepository,
-                           ActivityRepository activityRepository, TeamService teamService) {
+    public UserServiceImpl(UserRepository userRepository, TeamService teamService) {
         this.userRepository = userRepository;
-        this.assessmentRepository = assessmentRepository;
-        this.teamActivityRepository = teamActivityRepository;
-        this.teamMembershipRepository = teamMembershipRepository;
-        this.activityRepository = activityRepository;
         this.teamService = teamService;
     }
 
@@ -41,11 +28,6 @@ public class UserServiceImpl implements UserService {
     public User getUserByName(String name) throws UserNotFoundException {
         return userRepository.findByName(name)
                 .orElseThrow(() -> new UserNotFoundException("User not found with name: " + name));
-    }
-
-    @Override
-    public User getUserByNameAndRole(String name, String role) {
-        return null;
     }
 
     @Override
@@ -88,6 +70,16 @@ public class UserServiceImpl implements UserService {
     public User createAndAddMemberToTeam(String username, String teamName) {
         User newMember = createNewUser(username, Role.MEMBER);
         return teamService.addUserToTeam(newMember.getName(), teamName);
+    }
+
+    @Override
+    public Role checkUserRole(User user) {
+
+        return switch (user.getRole()) {
+            case MEMBER -> Role.MEMBER;
+            case TEAM_LEADER -> Role.TEAM_LEADER;
+            case MENTOR -> Role.MENTOR;
+        };
     }
 
 

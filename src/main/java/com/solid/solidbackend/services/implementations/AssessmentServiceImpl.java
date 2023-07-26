@@ -1,14 +1,20 @@
 package com.solid.solidbackend.services.implementations;
 
+import com.solid.solidbackend.entities.Activity;
 import com.solid.solidbackend.entities.Assessment;
 import com.solid.solidbackend.entities.User;
+import com.solid.solidbackend.enums.Role;
 import com.solid.solidbackend.exceptions.AssessmentNotFoundException;
+import com.solid.solidbackend.exceptions.MembersNotAllowedException;
 import com.solid.solidbackend.exceptions.UserNotFoundException;
+import com.solid.solidbackend.repositories.apprepository.ActivityRepository;
 import com.solid.solidbackend.repositories.apprepository.AssessmentRepository;
 import com.solid.solidbackend.repositories.apprepository.UserRepository;
 import com.solid.solidbackend.services.AssessmentService;
+import com.solid.solidbackend.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -17,33 +23,20 @@ public class AssessmentServiceImpl implements AssessmentService {
 
     private final AssessmentRepository assessmentRepository;
     private final UserRepository userRepository;
+    private final UserService userService;
+    private final ActivityRepository activityRepository;
 
     @Autowired
-    public AssessmentServiceImpl(AssessmentRepository assessmentRepository, UserRepository userRepository) {
+    public AssessmentServiceImpl(AssessmentRepository assessmentRepository, UserRepository userRepository, UserService userService, ActivityRepository activityRepository) {
         this.assessmentRepository = assessmentRepository;
         this.userRepository = userRepository;
+        this.userService = userService;
+        this.activityRepository = activityRepository;
     }
 
-    @Override
-    public List<Assessment> getAllAssessments() {
-        return null;
-    }
 
     @Override
-    public List<Assessment> getAssessmentsByUserId(Long userId)
-    {
-//        List<Assessment> assessments = assessmentRepository.findAllById(userId);
-//
-//        if(!assessments.isPresent())
-//            throw new IllegalStateException("No assessments found.");
-//
-//
-//        return assessments.get();
-        return null;
-    }
-
-    @Override
-    public List<Assessment> getAssessmentsByUserName(String userName) {
+    public List<Assessment> getAssessmentsByUsername(String userName) {
         var userOpt = userRepository.findByName(userName);
         if(userOpt.isEmpty())
         {
@@ -80,6 +73,32 @@ public class AssessmentServiceImpl implements AssessmentService {
         }
         User user = userOpt.get();
         return assessmentRepository.findAllByUserId(user.getId());
+    }
+
+
+    @Override
+    @Transactional
+    public void saveAssessmentsToActivity(String activityName, User mentor, List<Assessment> newAssessments) {
+
+
+        if (userService.checkUserRole(mentor) != Role.MENTOR) {
+            throw new MembersNotAllowedException("Only MENTORS are allowed to send session assessments");
+        }
+
+        Activity activity = activityRepository.findActivityByName(activityName)
+                .orElseThrow(() -> new IllegalArgumentException("Activity not found"));
+
+        for (Assessment assessment : newAssessments) {
+            assessment.setActivity(activity);
+
+            User teamMember = userRepository.findByName(assessment.getUser().getName()).orElseThrow(
+                    () -> new UserNotFoundException("No user with name: "+ assessment.getUser().getName() + " was found"));
+
+            assessment.setMentor(mentor);
+            assessment.setUser(teamMember);
+
+            assessmentRepository.save(assessment);
+        }
     }
 
 }

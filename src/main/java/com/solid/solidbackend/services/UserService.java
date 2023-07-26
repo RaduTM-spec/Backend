@@ -14,8 +14,6 @@ public interface UserService {
 
     User getUserByName(String name);
 
-    User getUserByNameAndRole(String name, String role);
-
     User saveUser(User user);
 
     User createNewUser(String name, Role role);
@@ -23,4 +21,6 @@ public interface UserService {
     User createAndAddLeadToTeam(String username, String teamName);
 
     User createAndAddMemberToTeam(String username, String teamName);
+
+    Role checkUserRole(User user);
 }

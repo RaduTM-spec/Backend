@@ -1,12 +1,8 @@
 package com.solid.solidbackend.services.implementations;
 
 import com.solid.solidbackend.entities.*;
-import com.solid.solidbackend.exceptions.TeamExistsException;
-import com.solid.solidbackend.exceptions.TeamMembershipExistsException;
-import com.solid.solidbackend.exceptions.TeamNotFoundException;
-import com.solid.solidbackend.exceptions.UserNotFoundException;
+import com.solid.solidbackend.exceptions.*;
 import com.solid.solidbackend.repositories.apprepository.*;
-import com.solid.solidbackend.services.ActivityService;
 import com.solid.solidbackend.services.TeamService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -25,18 +21,16 @@ public class TeamServiceImpl implements TeamService {
     private final UserRepository userRepository;
     private final AssessmentRepository assessmentRepository;
     private final ActivityRepository activityRepository;
-    private final ActivityService activityService;
 
     @Autowired
-    public TeamServiceImpl(TeamRepository teamRepository, TeamActivityRepository teamActivityRepository, TeamMembershipRepository teamMembershipRepository, UserRepository userRepository, AssessmentRepository assessmentRepository, ActivityRepository activityRepository, ActivityService activityService) {
+    public TeamServiceImpl(TeamRepository teamRepository, TeamActivityRepository teamActivityRepository, TeamMembershipRepository teamMembershipRepository, UserRepository userRepository, AssessmentRepository assessmentRepository, ActivityRepository activityRepository) {
         this.teamRepository = teamRepository;
         this.teamActivityRepository = teamActivityRepository;
         this.teamMembershipRepository = teamMembershipRepository;
         this.userRepository = userRepository;
         this.assessmentRepository = assessmentRepository;
-        this.activityRepository = activityRepository;
 
-        this.activityService = activityService;
+        this.activityRepository = activityRepository;
     }
 
     public Team getTeamByName(String name) {
@@ -97,18 +91,12 @@ public class TeamServiceImpl implements TeamService {
 
     @Override
     public List<Team> getTeamsByActivity(String activityName) {
-//        List<TeamActivity> teamActivities = teamActivityRepository.findAllTeamsByActivityName(activityName);
-//        return teamActivities.stream().map(TeamActivity::getTeam).toList();
-
-        Activity selectedActivity = activityService.getActivityByName(activityName);
-//        return teamActivityRepository.findAllTeamsByActivityId(selectedActivity.getId());
-
+        Activity selectedActivity = activityRepository.findActivityByName(activityName).orElseThrow(
+                () -> new NoActivityFoundException("No activity with name " + activityName + " was found")
+        );
         List<TeamActivity> teamActivities = teamActivityRepository.findByActivity_Id(selectedActivity.getId());
         return teamActivities.stream().map(TeamActivity::getTeam).collect(Collectors.toList());
 
-//        return teamActivities.stream()
-//                .map(teamActivity -> new TeamDTO(teamActivity.getTeam().getId(), teamActivity.getTeam().getName()))
-//                .collect(Collectors.toList());
     }
 
 //    public User addUserToTeam(String username, String teamName) {
@@ -141,19 +129,15 @@ public class TeamServiceImpl implements TeamService {
         Team joinedTeam = teamRepository.findByName(teamName).orElseThrow(
                 () -> new TeamNotFoundException("Team with name '" + teamName + "' not found.")
         );
-
         // Check if user is already part of the team
         Optional<TeamMembership> teamMembership = teamMembershipRepository.findByTeamAndUser(joinedTeam.getId(), username);
-
         if (teamMembership.isPresent()) {
             throw new TeamMembershipExistsException("User with username '" + username + "' already joined the team '" + teamName + "'.");
         }
-
         // Take the whole user object
         User newUser = userRepository.findByName(username).orElseThrow(
                 () -> new UserNotFoundException("User with username '" + username + "' not found.")
         );
-
         // Create a new TeamMembership
         TeamMembership tm = new TeamMembership(joinedTeam, newUser);
         teamMembershipRepository.save(tm);

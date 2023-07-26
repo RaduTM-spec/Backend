@@ -1,4 +1,11 @@
 package com.solid.solidbackend.exceptions;
 
-public class AlreadyJoinedActivityException {
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.ResponseStatus;
+
+@ResponseStatus(HttpStatus.BAD_REQUEST)
+public class AlreadyJoinedActivityException  extends RuntimeException{
+    public AlreadyJoinedActivityException(String message) {
+        super(message);
+    }
 }
