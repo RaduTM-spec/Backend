@@ -28,14 +28,11 @@ public class RegistrationController {
 
     // here you inject the service beans that you use
     private final UserService userService;
-    private final TeamService teamService;
     private final ActivityService activityService;
 
 
-    public RegistrationController(UserService userService, TeamServiceImpl teamService, MentorActivityService mentorActivityService,
-                                  ActivityService activityService, ActivityService activityService1) {
+    public RegistrationController(UserService userService, ActivityService activityService1) {
         this.userService = userService;
-        this.teamService = teamService;
         this.activityService = activityService1;
 
     }

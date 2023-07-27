@@ -1,6 +1,7 @@
 package com.solid.solidbackend.services.implementations;
 
 import com.solid.solidbackend.entities.*;
+import com.solid.solidbackend.enums.Role;
 import com.solid.solidbackend.exceptions.RoleNotAllowedException;
 import com.solid.solidbackend.exceptions.NoActivityFoundException;
 import com.solid.solidbackend.exceptions.UserNotFoundException;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 
@@ -32,11 +34,9 @@ public class ActivityServiceImpl implements ActivityService {
 
         this.activityRepository = activityRepository;
         this.mentorActivityService = mentorActivityService;
-
         this.userRepository = userRepository;
         this.teamActivityRepository = teamActivityRepository;
         this.teamMembershipRepository = teamMembershipRepository;
-
         this.teamActivityService = teamActivityService;
         this.userService = userService;
     }
@@ -56,7 +56,7 @@ public class ActivityServiceImpl implements ActivityService {
     @Override
     public Activity getActivityByName(String activityName) {
         return activityRepository.findActivityByName(activityName).orElseThrow(
-                () -> new NoActivityFoundException("No activity was found with name: " + activityName)
+                () -> new NoActivityFoundException(activityName)
         );
     }
 
@@ -64,13 +64,19 @@ public class ActivityServiceImpl implements ActivityService {
     public List<Activity> getUserActivities(String userName) {
         // Get user's team
         User user = userRepository.findByName(userName).orElseThrow(
-                () -> new UserNotFoundException("\nUser with name `" + userName +"` was not found!\n")
+                () -> new UserNotFoundException(userName)
         );
+
+        if (Objects.requireNonNull(userService.checkUserRole(user)) == Role.MENTOR) {
+            throw new RuntimeException("This needs fixing!!");
+        }
+
         Team team = teamMembershipRepository.findTeamByUserId(user.getId());
 
         // Use team's id to retrieve all activities
         List<TeamActivity> teamActivities = teamActivityRepository.findAllActivitiesByTeamId(team.getId());
         return teamActivities.stream().map(TeamActivity::getActivity).toList();
+
     }
 
     @Override
@@ -102,12 +108,12 @@ public class ActivityServiceImpl implements ActivityService {
     public Activity joinActivity(String userName, String activityName) {
         // we get the activity that the lead wants to join
         Activity joinedActivity = activityRepository.findActivityByName(activityName).orElseThrow(
-                () -> new NoActivityFoundException("Activity with name: " + activityName + " was not found")
+                () -> new NoActivityFoundException(activityName)
         );
 
         // we get the user for its id to use at linking
         User joiningUser = userRepository.findByName(userName).orElseThrow(
-                () -> new UserNotFoundException("User with name: " + userName + " was not found")
+                () -> new UserNotFoundException(userName)
         );
 
         switch (userService.checkUserRole(joiningUser)) {

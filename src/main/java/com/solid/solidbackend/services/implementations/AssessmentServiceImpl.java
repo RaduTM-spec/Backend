@@ -49,7 +49,6 @@ public class AssessmentServiceImpl implements AssessmentService {
         );
     }
 
-
     @Override
     public List<Assessment> getUserAssessments(String userName) {
         User user = userRepository.findByName(userName).orElseThrow(
@@ -58,7 +57,6 @@ public class AssessmentServiceImpl implements AssessmentService {
 
         return assessmentRepository.findAllByUserId(user.getId());
     }
-
 
     @Override
     @Transactional
