@@ -47,9 +47,10 @@ public class UserServiceImpl implements UserService {
     public User createNewUser(String name, Role role) {
 
         String pictureUrl = "https://robohash.org/" + name + ".png";
-
+        if (userRepository.findByName(name).isPresent()) {
+            throw new RuntimeException("User with username `" + name +"` already exists!");
+        }
         User newUser = new User(name, role, pictureUrl);
-
         return saveUser(newUser);
     }
 
@@ -57,12 +58,7 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public User createAndAddLeadToTeam(String username, String teamName) {
         User newLead = createNewUser(username, Role.TEAM_LEADER);
-//        Optional<Team> newTeam = teamService.findTeamByName();
-//        if (newTeam.isPresent()) {
-//            throw new TeamExistsException("Team " + teamName + " cannot be crated because it already exists");
-//        }
-
-        Team joinedTeam = teamService.createTeam(teamName, newLead);
+        teamService.createTeam(teamName, newLead);
         return teamService.addUserToTeam(username, teamName);
     }
 
@@ -76,7 +72,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public void checkIfUserIsMentor(String userName) {
         User mentor = getUserByName(userName);
-        if (mentor.getRole() != Role.MENTOR) throw new RoleNotAllowedException("MEMBERS");
+        if (mentor.getRole() != Role.MENTOR) throw new RoleNotAllowedException("MENTORS");
     }
 
     @Override

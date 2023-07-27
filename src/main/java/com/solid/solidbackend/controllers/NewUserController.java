@@ -1,3 +1,4 @@
+
 package com.solid.solidbackend.controllers;
 
 import com.solid.solidbackend.entities.*;
@@ -10,13 +11,17 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
+
+
+/**
+ * Controller for user registration and authentication operations.
+ */
 
 @Slf4j
 @RestController
 @RequestMapping("/")
-public class UserController {
+public class NewUserController {
 
     private final UserService userService;
     private final TeamService teamService;
@@ -24,27 +29,39 @@ public class UserController {
     private final ActivityService activityService;
 
     @Autowired
-    public UserController(UserService userService, TeamService teamService, AssessmentService assessmentService, ActivityService activityService) {
+    public NewUserController(UserService userService, TeamService teamService, AssessmentService assessmentService, ActivityService activityService) {
         this.userService = userService;
         this.teamService = teamService;
         this.assessmentService = assessmentService;
         this.activityService = activityService;
     }
 
-    @Operation(summary = "gets all activities enrolled by the user")
-    @GetMapping("/activities/{userName}")
-    public ResponseEntity<List<Activity>> getActivities(@PathVariable String userName) {
+    /**
+     * Fetches all activities enrolled by a specific user.
+     *
+     * @param userName The username of the user whose activities are to be fetched.
+     * @return A ResponseEntity containing a list of Activity objects representing the activities joined by the user.
+     */
+    @GetMapping("/activities")
+    @Operation(summary = "fetches all activities enrolled by the user")
+    public ResponseEntity<List<Activity>> getActivities(@RequestParam String userName) {
         log.info(" > Fetching activities joined by user: {}", userName);
         List<Activity> activities = activityService.getUserActivities(userName);
         return ResponseEntity.ok(activities);
     }
 
 
-
+    /**
+     * Fetches all teams enrolled in a specific activity for a given user.
+     *
+     * @param userName     The username of the user for whom the teams are to be fetched.
+     * @param activityName The name of the activity for which the teams are to be fetched.
+     * @return A ResponseEntity containing a list of Team objects representing the teams registered in the activity.
+     */
     @Operation(summary = "gets all teams enrolled in a specific activity")
-    @GetMapping("/activities/{userName}/{activityName}/teams")
-    public ResponseEntity<List<Team>> getActivityTeams(@PathVariable String userName,
-                                                       @PathVariable String activityName) {
+    @GetMapping("/activity-teams")
+    public ResponseEntity<List<Team>> getActivityTeams(@RequestParam String userName,
+                                                       @RequestParam String activityName) {
         userService.checkIfUserIsMentor(userName);
         log.info(" > Fetching teams registered in activity: {}", activityName);
         List<Team> teams = teamService.getTeamsByActivity(userName, activityName);
@@ -52,21 +69,17 @@ public class UserController {
     }
 
 
-
     @Operation(summary = "gets all assessments received by a user in activities")
-    @GetMapping("/activities/{userName}/assessments")
-    public ResponseEntity<List<Assessment>> getUserAssessments(@PathVariable String userName) {
-
+    @GetMapping("/user-assessments")
+    public ResponseEntity<List<Assessment>> getUserAssessments(@RequestParam String userName) {
         log.info(" > Fetching assessments for user: {}", userName);
         List<Assessment> assessments = assessmentService.getUserAssessments(userName);
         return ResponseEntity.ok(assessments);
     }
 
-
-
     @Operation(summary = "creates an activity and enrolls the user in it")
-    @PostMapping("/activities/{userName}/create")
-    public ResponseEntity<Activity> createActivity(@PathVariable String userName,
+    @PostMapping("/activities")
+    public ResponseEntity<Activity> createActivity(@RequestParam String userName,
                                                    @RequestBody Activity mentorActivity) {
         userService.checkIfUserIsMentor(userName);
         log.info(" > Creating a new activity named {} for mentor: {}", mentorActivity.getName(), userName);
@@ -74,40 +87,32 @@ public class UserController {
         return ResponseEntity.ok(activity);
     }
 
-
     @Operation(summary = "joins the user or the team of a user in an existing activity")
-    @PutMapping("/activities/{userName}/join/{activityName}")
-    public ResponseEntity<Activity> joinExistingActivity(@PathVariable String userName,
-                                                         @PathVariable String activityName) {
-
+    @PutMapping("/join-activity")
+    public ResponseEntity<Activity> joinExistingActivity(@RequestParam String userName,
+                                                         @RequestParam String activityName) {
         // no need to check role here because the JoinActivity method`s logic handle all possible ROLE cases
         log.info(" > Joining existing activity: {} by user: {}", activityName, userName);
         Activity joinedActivity = activityService.joinActivity(userName, activityName);
         return ResponseEntity.ok(joinedActivity);
     }
 
-
-
-    // TODO this needs careful refactoring. it returns an empty list of members even if members joined
     @Operation(summary = "gets all the details of the team and its performance in an activity")
-    @GetMapping("/activities/{userName}/{activityName}/teams/{teamName}")
-    public ResponseEntity<TeamDetails> getTeamDetailsFromAnActivity(@PathVariable String userName,
-                                                                    @PathVariable String activityName,
-                                                                    @PathVariable String teamName) {
-
+    @GetMapping("/team-details")
+    public ResponseEntity<TeamDetails> getTeamDetailsFromAnActivity(@RequestParam String userName,
+                                                                    @RequestParam String activityName,
+                                                                    @RequestParam String teamName) {
         userService.checkIfUserIsMentor(userName);
         log.info(" > Fetching team details for activity: {} and team: {}", activityName, teamName);
         TeamDetails td = teamService.getTeamDetailsFromAnActivity(activityName, teamName);
         return ResponseEntity.ok(td);
     }
 
-
-
     @Operation(summary = "creates a new session assessment for a team in an activity")
-    @PostMapping("/activities/{userName}/{activityName}/teams/{teamName}/assessment")
-    public ResponseEntity<TeamDetails> createNewSessionAssessmentOnTeam(@PathVariable String userName,
-                                                                        @PathVariable String activityName,
-                                                                        @PathVariable String teamName,
+    @PostMapping("/team-assessment")
+    public ResponseEntity<TeamDetails> createNewSessionAssessmentOnTeam(@RequestParam String userName,
+                                                                        @RequestParam String activityName,
+                                                                        @RequestParam String teamName,
                                                                         @RequestBody List<Assessment> newAssessments) {
         userService.checkIfUserIsMentor(userName);
         User mentor = userService.getUserByName(userName);
@@ -115,7 +120,4 @@ public class UserController {
         TeamDetails updatedTeamDetails = teamService.getTeamDetailsFromAnActivity(activityName, teamName);
         return ResponseEntity.ok(updatedTeamDetails);
     }
-
-
-
 }

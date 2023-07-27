@@ -1,7 +1,6 @@
 package com.solid.solidbackend.repositories.apprepository;
 
 import com.solid.solidbackend.entities.Activity;
-import com.solid.solidbackend.entities.Team;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
