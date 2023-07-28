@@ -17,4 +17,5 @@ public interface ActivityService {
     Activity createAndJoinActivity(String userName, Activity activity);
 
     Activity joinActivity(String userName, String activityName);
+
 }

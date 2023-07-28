@@ -2,6 +2,7 @@ package com.solid.solidbackend.services.implementations;
 
 import com.solid.solidbackend.entities.*;
 import com.solid.solidbackend.enums.Role;
+import com.solid.solidbackend.exceptions.ActivityAlreadyExistsException;
 import com.solid.solidbackend.exceptions.RoleNotAllowedException;
 import com.solid.solidbackend.exceptions.NoActivityFoundException;
 import com.solid.solidbackend.exceptions.UserNotFoundException;
@@ -66,27 +67,6 @@ public class ActivityServiceImpl implements ActivityService {
         );
     }
 
-//    @Override
-//    public List<Activity> getUserActivities(String userName) {
-//        // Get user's team
-//        User user = userRepository.findByName(userName).orElseThrow(
-//                () -> new UserNotFoundException(userName)
-//        );
-//
-//        if (Objects.requireNonNull(userService.checkUserRole(user)) == Role.MENTOR) {
-////            userActivities.addAll(activityRepository.findActivitiesByCreator(user));
-//
-//            return new ArrayList<>(mentorActivityRepository.findActivitiesByMentor(user));
-//
-//        }
-//
-//        Team team = teamMembershipRepository.findTeamByUserId(user.getId());
-//
-//        // Use team's id to retrieve all activities
-//        List<TeamActivity> teamActivities = teamActivityRepository.findAllActivitiesByTeamId(team.getId());
-//        return teamActivities.stream().map(TeamActivity::getActivity).toList();
-//
-//    }
 
     @Override
     public List<Activity> getUserActivities(String userName) {
@@ -104,6 +84,8 @@ public class ActivityServiceImpl implements ActivityService {
     @Override
     @Transactional
     public MentorActivity addNewMentorToActivity(String activityName, User newMentor, String dueDate) {
+
+
 
         // search for the activity to see if it already exists
         Optional<Activity> existingActivity = activityRepository.findActivityByName(activityName);
@@ -149,5 +131,6 @@ public class ActivityServiceImpl implements ActivityService {
 
         return joinedActivity;
     }
+
 
 }

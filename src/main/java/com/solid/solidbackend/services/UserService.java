@@ -13,10 +13,6 @@ public interface UserService {
 
     User createNewUser(String name, Role role);
 
-    User createAndAddLeadToTeam(String username, String teamName);
-
-    User createAndAddMemberToTeam(String username, String teamName);
-
     void checkIfUserIsMentor(String userName);
 
     void checkIfUserIsLead(String userName);

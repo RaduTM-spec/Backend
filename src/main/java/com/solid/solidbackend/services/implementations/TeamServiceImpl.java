@@ -101,29 +101,9 @@ public class TeamServiceImpl implements TeamService {
 
     }
 
-//    public User addUserToTeam(String username, String teamName) {
-//        // Find the Team object by name
-//        var teamOptional = teamRepository.findByName(teamName);
-//        Team team = teamOptional.get();
-//
-//        // If exists, throw successfull exception
-//        var teamMembershipOptional = teamMembershipRepository.findById(team.getId());
-//
-//        if (teamMembershipOptional.isPresent()) {
-//            throw new TeamMembershipExistsException("User already joined the team.");
-//        }
-//        // else it doesn't exist, create new TeamMemebership
-//
-//
-//        var userOptional = userRepository.findByName(username);
-//        User user = userOptional.get();
-//        // from this point i suppose the user already exists.
-//
-//        TeamMembership tm = new TeamMembership(team, user);
-//        teamMembershipRepository.save(tm);
-//
-//        return user;
-//    }
+
+
+
 
     @Override
     public User addUserToTeam(String username, String teamName) {
