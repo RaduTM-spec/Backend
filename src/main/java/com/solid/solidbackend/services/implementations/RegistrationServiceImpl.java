@@ -3,8 +3,7 @@ package com.solid.solidbackend.services.implementations;
 import com.solid.solidbackend.entities.Activity;
 import com.solid.solidbackend.entities.User;
 import com.solid.solidbackend.enums.Role;
-import com.solid.solidbackend.exceptions.ActivityAlreadyExistsException;
-import com.solid.solidbackend.exceptions.NoActivityFoundException;
+import com.solid.solidbackend.exceptions.*;
 import com.solid.solidbackend.repositories.apprepository.ActivityRepository;
 import com.solid.solidbackend.services.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,30 +36,30 @@ public class RegistrationServiceImpl implements RegistrationService {
 
     @Override
     @Transactional
-    public User createAndAddLeadToTeam(String username, String teamName) {
-        User newLead = userService.createNewUser(username, Role.TEAM_LEADER);
+    public User createLeader_addLeaderToTeam(String username, String teamName) {
+        User newLead = userService.createUser(username, Role.TEAM_LEADER);
         teamService.createTeam(teamName, newLead);
         return teamService.addUserToTeam(username, teamName);
     }
 
     @Override
     @Transactional
-    public User createAndAddMemberToTeam(String username, String teamName) {
-        User newMember = userService.createNewUser(username, Role.MEMBER);
+    public User createMember_addMemberToTeam(String username, String teamName) {
+        User newMember = userService.createUser(username, Role.MEMBER);
         return teamService.addUserToTeam(newMember.getName(), teamName);
     }
 
 
     @Override
     @Transactional
-    public User createAndAddMentorToExistingActivity(String activityName, String userName, String dueDate) {
-        userService.createNewUser(userName, Role.MENTOR);
+    public User createMentor_addMentorToActivity(String activityName, String userName, String dueDate) throws UserExistsException, ActivityNotFoundException{
+        User newMentor = userService.createUser(userName, Role.MENTOR);
+
 
         Activity existingActivity = activityRepository.findActivityByName(activityName).orElseThrow(
-                () -> new NoActivityFoundException(activityName)
+                () -> new ActivityNotFoundException(activityName)
         );
 
-        User newMentor = userService.createNewUser(userName, Role.MENTOR);
 
         mentorActivityService.linkMentorWithActivity(newMentor, existingActivity);
 
@@ -69,8 +68,8 @@ public class RegistrationServiceImpl implements RegistrationService {
 
     @Override
     @Transactional
-    public User createAndAddMentorToNewActivity(String activityName, String userName, String dueDate) {
-        User newMentor = userService.createNewUser(userName, Role.MENTOR);
+    public User createMentor_createActivity_addMentorToActivity(String activityName, String userName, String dueDate) {
+        User newMentor = userService.createUser(userName, Role.MENTOR);
 
         if (activityRepository.findActivityByName(activityName).isPresent()) {
             throw new ActivityAlreadyExistsException(activityName);
@@ -82,13 +81,14 @@ public class RegistrationServiceImpl implements RegistrationService {
         newActivity.setDeadline(dueDate);
 
         activityRepository.save(newActivity);
+        mentorActivityService.linkMentorWithActivity(newMentor, newActivity);
 
         return newMentor;
     }
 
 
 
-
+    // Astea de mai jos sa ma bata tata de stiu ce rost au. ~semnat Radu
     @Override
     public User registerNewMember(User user, String activityName) {
         // more logic needed here
@@ -97,7 +97,7 @@ public class RegistrationServiceImpl implements RegistrationService {
     }
 
     @Override
-    public User registerNewMentor(User user, String activityName, String dueDate) {
+    public User registerNewMentor(User user, String activityName, String dueDate) throws UserExistsException {
         // more logic needed here
 
         return userService.saveUser(user);

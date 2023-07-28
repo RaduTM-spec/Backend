@@ -2,9 +2,8 @@ package com.solid.solidbackend.services.implementations;
 
 import com.solid.solidbackend.entities.*;
 import com.solid.solidbackend.enums.Role;
-import com.solid.solidbackend.exceptions.ActivityAlreadyExistsException;
 import com.solid.solidbackend.exceptions.RoleNotAllowedException;
-import com.solid.solidbackend.exceptions.NoActivityFoundException;
+import com.solid.solidbackend.exceptions.ActivityNotFoundException;
 import com.solid.solidbackend.exceptions.UserNotFoundException;
 import com.solid.solidbackend.repositories.apprepository.*;
 import com.solid.solidbackend.services.ActivityService;
@@ -45,7 +44,7 @@ public class ActivityServiceImpl implements ActivityService {
     @Override
     @Transactional
     public Activity createAndJoinActivity(String userName, Activity activity) {
-        User mentor = userService.getUserByName(userName);
+        User mentor = userService.findUserByName(userName);
 
         Activity newActivity = new Activity();
         newActivity.setName(activity.getName());
@@ -63,14 +62,14 @@ public class ActivityServiceImpl implements ActivityService {
     @Transactional
     public Activity getActivityByName(String activityName) {
         return activityRepository.findActivityByName(activityName).orElseThrow(
-                () -> new NoActivityFoundException(activityName)
+                () -> new ActivityNotFoundException(activityName)
         );
     }
 
 
     @Override
     public List<Activity> getUserActivities(String userName) {
-        User user = userService.getUserByName(userName);
+        User user = userService.findUserByName(userName);
 
         if (user.getRole() == Role.MENTOR) {
             return activityRepository.findActivitiesByUser(user);
@@ -110,7 +109,7 @@ public class ActivityServiceImpl implements ActivityService {
     public Activity joinActivity(String userName, String activityName) {
         // we get the activity that the lead wants to join
         Activity joinedActivity = activityRepository.findActivityByName(activityName).orElseThrow(
-                () -> new NoActivityFoundException(activityName)
+                () -> new ActivityNotFoundException(activityName)
         );
 
         // we get the user for its id to use at linking
@@ -118,7 +117,7 @@ public class ActivityServiceImpl implements ActivityService {
                 () -> new UserNotFoundException(userName)
         );
 
-        switch (userService.checkUserRole(joiningUser)) {
+        switch (joiningUser.getRole()) {
             case MENTOR -> mentorActivityService.linkMentorWithActivity(joiningUser, joinedActivity);
             case TEAM_LEADER -> {
                 Team joiningTeam = teamMembershipRepository.findTeamByUserId(joiningUser.getId());

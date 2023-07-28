@@ -4,14 +4,13 @@ package com.solid.solidbackend.services.implementations;
 import com.solid.solidbackend.entities.*;
 import com.solid.solidbackend.enums.Role;
 import com.solid.solidbackend.exceptions.RoleNotAllowedException;
-import com.solid.solidbackend.exceptions.UserCreationException;
+import com.solid.solidbackend.exceptions.UserExistsException;
 import com.solid.solidbackend.exceptions.UserNotFoundException;
 import com.solid.solidbackend.repositories.apprepository.*;
 import com.solid.solidbackend.services.TeamService;
 import com.solid.solidbackend.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -26,17 +25,17 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User getUserByName(String name) throws UserNotFoundException {
+    public User findUserByName(String name) throws UserNotFoundException {
         return userRepository.findByName(name)
                 .orElseThrow(() -> new UserNotFoundException(name));
     }
 
     @Override
-    public User saveUser(User user) {
+    public User saveUser(User user) throws UserExistsException{
 
         // we check if the user already exists by name
         if (userRepository.findByName(user.getName()).isPresent()) {
-            throw new UserCreationException(user.getName());
+            throw new UserExistsException("User " + user.getName() + " already exists in the database!");
         }
 
         return userRepository.save(user);
@@ -45,9 +44,9 @@ public class UserServiceImpl implements UserService {
 
     @Override
 
-    public User createNewUser(String name, Role role) {
+    public User createUser(String name, Role role) throws UserExistsException{
         if (userRepository.findByName(name).isPresent()) {
-            throw new RuntimeException("User with username `" + name +"` already exists!");
+            throw new UserExistsException("User with username `" + name +"` already exists!");
         }
 
         String pictureUrl = "https://robohash.org/" + name + ".png";
@@ -57,35 +56,10 @@ public class UserServiceImpl implements UserService {
 
 
     @Override
-    public void checkIfUserIsMentor(String userName) {
-        User mentor = getUserByName(userName);
+    public void checkIfUserIsMentor(String userName) throws RoleNotAllowedException{
+        User mentor = findUserByName(userName);
         if (mentor.getRole() != Role.MENTOR) throw new RoleNotAllowedException("MENTORS");
 
 
     }
-
-    @Override
-    public void checkIfUserIsLead(String userName) {
-        User mentor = getUserByName(userName);
-        if (mentor.getRole() != Role.MENTOR) throw new RoleNotAllowedException("LEADS");
-    }
-
-    @Override
-    public void checkIfUserIsMentorOrLead(String userName) {
-        User mentor = getUserByName(userName);
-        if (mentor.getRole() != Role.MENTOR) throw new RoleNotAllowedException("MENTORS and LEADS");
-    }
-
-    @Override
-    public Role checkUserRole(User user) {
-
-        return switch (user.getRole()) {
-            case MEMBER -> Role.MEMBER;
-            case TEAM_LEADER -> Role.TEAM_LEADER;
-            case MENTOR -> Role.MENTOR;
-        };
-    }
-
-
-
 }

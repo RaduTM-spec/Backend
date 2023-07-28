@@ -13,11 +13,8 @@ import java.util.Optional;
 @Repository
 public interface TeamMembershipRepository extends JpaRepository <TeamMembership, Long> {
 
-    @Query("SELECT tm FROM TeamMembership tm WHERE tm.team.id = :teamId")
-    List<User> findAllUsersByTeamId(Long teamId);
-
     @Query("SELECT tm FROM TeamMembership tm WHERE tm.team.name = :teamName")
-    List<User> findAllUsersByTeamName(String teamName);
+    List<TeamMembership> findAllTeamMembershipsByTeamName(String teamName);
 
     @Query("SELECT tm.team FROM TeamMembership tm WHERE tm.user.id = :userId")
     Team findTeamByUserId(Long userId);

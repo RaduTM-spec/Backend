@@ -4,7 +4,6 @@ import com.solid.solidbackend.entities.*;
 import com.solid.solidbackend.exceptions.*;
 import com.solid.solidbackend.repositories.apprepository.*;
 import com.solid.solidbackend.services.TeamService;
-import com.solid.solidbackend.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -43,7 +42,7 @@ public class TeamServiceImpl implements TeamService {
         return teamOptional.get();
     }
 
-    public Team createTeam(String teamName, User teamLeader)
+    public Team createTeam(String teamName, User teamLeader) throws TeamExistsException
     {
         Optional<Team> teamOptional = teamRepository.findByName(teamName);
 
@@ -55,7 +54,11 @@ public class TeamServiceImpl implements TeamService {
     }
 
     public TeamDetails getTeamDetailsFromAnActivity(String activityName, String teamname) {
-        List<User> members = teamMembershipRepository.findAllUsersByTeamName(teamname);
+        List<TeamMembership> memberships = teamMembershipRepository.findAllTeamMembershipsByTeamName(teamname);
+
+        List<User> members = memberships.stream()
+                .map(TeamMembership::getUser)
+                .collect(Collectors.toList());
 
         // for each member, i get all assessments. From there i extract all grades and attendances.
         List<Float> gradesOfMembers = new LinkedList<>();
@@ -87,14 +90,14 @@ public class TeamServiceImpl implements TeamService {
         if (teamGrade != 0) // check for division by 0
             teamGrade /= gradesOfMembers.size();
 
-        return new TeamDetails(members, gradesOfMembers, attendancesOfMembers, teamGrade, members.size());
+        return new TeamDetails(members, gradesOfMembers, attendancesOfMembers, teamGrade);
     }
 
     @Override
     public List<Team> getTeamsByActivity(String username, String activityName) {
 
         Activity selectedActivity = activityRepository.findActivityByName(activityName).orElseThrow(
-                () -> new NoActivityFoundException(activityName)
+                () -> new ActivityNotFoundException(activityName)
         );
         List<TeamActivity> teamActivities = teamActivityRepository.findByActivity_Id(selectedActivity.getId());
         return teamActivities.stream().map(TeamActivity::getTeam).collect(Collectors.toList());

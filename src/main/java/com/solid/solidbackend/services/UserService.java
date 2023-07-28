@@ -2,22 +2,19 @@ package com.solid.solidbackend.services;
 
 import com.solid.solidbackend.entities.User;
 import com.solid.solidbackend.enums.Role;
+import com.solid.solidbackend.exceptions.RoleNotAllowedException;
+import com.solid.solidbackend.exceptions.UserExistsException;
+import com.solid.solidbackend.exceptions.UserNotFoundException;
 import org.springframework.stereotype.Service;
 
 @Service
 public interface UserService {
 
-    User getUserByName(String name);
+    User findUserByName(String name) throws UserNotFoundException;
 
-    User saveUser(User user);
+    User saveUser(User user) throws UserExistsException;
 
-    User createNewUser(String name, Role role);
+    User createUser(String name, Role role) throws UserExistsException;
 
-    void checkIfUserIsMentor(String userName);
-
-    void checkIfUserIsLead(String userName);
-
-    void checkIfUserIsMentorOrLead(String userName);
-
-    Role checkUserRole(User user);
+    void checkIfUserIsMentor(String userName) throws RoleNotAllowedException;
 }

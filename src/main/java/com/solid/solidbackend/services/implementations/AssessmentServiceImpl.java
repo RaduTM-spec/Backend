@@ -3,13 +3,11 @@ package com.solid.solidbackend.services.implementations;
 import com.solid.solidbackend.entities.Activity;
 import com.solid.solidbackend.entities.Assessment;
 import com.solid.solidbackend.entities.User;
-import com.solid.solidbackend.enums.Role;
 import com.solid.solidbackend.exceptions.*;
 import com.solid.solidbackend.repositories.apprepository.ActivityRepository;
 import com.solid.solidbackend.repositories.apprepository.AssessmentRepository;
 import com.solid.solidbackend.repositories.apprepository.UserRepository;
 import com.solid.solidbackend.services.AssessmentService;
-import com.solid.solidbackend.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -67,7 +65,7 @@ public class AssessmentServiceImpl implements AssessmentService {
 //        }
 
         Activity activity = activityRepository.findActivityByName(activityName)
-                .orElseThrow(() -> new NoActivityFoundException(activityName));
+                .orElseThrow(() -> new ActivityNotFoundException(activityName));
 
         for (Assessment assessment : newAssessments) {
             assessment.setActivity(activity);

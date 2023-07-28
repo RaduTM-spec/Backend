@@ -1,7 +1,6 @@
 package com.solid.solidbackend.controllers;
 
 import com.solid.solidbackend.entities.User;
-import com.solid.solidbackend.services.ActivityService;
 import com.solid.solidbackend.services.RegistrationService;
 import com.solid.solidbackend.services.UserService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -39,14 +38,14 @@ public class RegistrationController {
     public ResponseEntity<User> authenticateUser(@RequestParam String name) {
 
         log.info(" > Authenticating existing user: {}", name);
-        User authenticatedUser = userService.getUserByName(name);
+        User authenticatedUser = userService.findUserByName(name);
         log.info(" > User authenticated successfully!");
         return ResponseEntity.ok(authenticatedUser);
     }
 
 
     /**
-     * Creates a new MEMBER and enrolls them in an existing team if the entered activity exists.
+     * Creates a new MEMBER and enrolls him in an existing team.
      *
      * @param username The username of the new member to be created.
      * @param teamName The name of the team in which the new member will be enrolled.
@@ -58,7 +57,7 @@ public class RegistrationController {
                                                                @RequestParam String teamName) {
 
         log.info(" > Creating a new member with username: {} and adding to team: {}", username, teamName);
-        User addedMember = registrationService.createAndAddMemberToTeam(username, teamName);
+        User addedMember = registrationService.createMember_addMemberToTeam(username, teamName);
         return ResponseEntity.ok(addedMember);
     }
 
@@ -83,9 +82,9 @@ public class RegistrationController {
         log.info(" > Creating a new mentor with username: {}", userName);
 
         if (create) {
-            newMentor = registrationService.createAndAddMentorToNewActivity(activityName, userName, dueDate);
+            newMentor = registrationService.createMentor_createActivity_addMentorToActivity(activityName, userName, dueDate);
         } else {
-            newMentor = registrationService.createAndAddMentorToExistingActivity(activityName, userName, dueDate);
+            newMentor = registrationService.createMentor_addMentorToActivity(activityName, userName, dueDate);
         }
 
         return ResponseEntity.ok(newMentor);
@@ -104,8 +103,8 @@ public class RegistrationController {
     public ResponseEntity<User> createLeadAndAddLead(@RequestParam String userName,
                                                      @RequestParam String teamName) {
 
-        log.info(" > Creating a new lead with username: {} and adding to team: {}", userName, teamName);
-        User user = registrationService.createAndAddLeadToTeam(userName, teamName);
+        log.info(" > Creating a new leader with username: {} and adding to team: {}", userName, teamName);
+        User user = registrationService.createLeader_addLeaderToTeam(userName, teamName);
         return ResponseEntity.ok(user);
     }
 }

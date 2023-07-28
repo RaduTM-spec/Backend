@@ -99,10 +99,11 @@ public class UserController {
 
     @GetMapping("/team-details")
     @Operation(summary = "gets all the details of the team and its performance in an activity")
-    public ResponseEntity<TeamDetails> getTeamDetailsFromAnActivity(@RequestParam String userName,
+    public ResponseEntity<TeamDetails> getTeamDetailsFromAnActivity(@RequestParam String mentorUserName,
                                                                     @RequestParam String activityName,
                                                                     @RequestParam String teamName) {
-        userService.checkIfUserIsMentor(userName);
+        // it works now
+        userService.checkIfUserIsMentor(mentorUserName); // this has to be done in service but anyways...
         log.info(" > Fetching team details for activity: {} and team: {}", activityName, teamName);
         TeamDetails td = teamService.getTeamDetailsFromAnActivity(activityName, teamName);
         return ResponseEntity.ok(td);
@@ -110,12 +111,13 @@ public class UserController {
 
     @Operation(summary = "creates a new session assessment for a team in an activity")
     @PostMapping("/team-assessment")
-    public ResponseEntity<TeamDetails> createNewSessionAssessmentOnTeam(@RequestParam String userName,
+    public ResponseEntity<TeamDetails> createNewSessionAssessmentOnTeam(@RequestParam String mentorUserName,
                                                                         @RequestParam String activityName,
                                                                         @RequestParam String teamName,
                                                                         @RequestBody List<Assessment> newAssessments) {
-        userService.checkIfUserIsMentor(userName);
-        User mentor = userService.getUserByName(userName);
+        // Actually allows multiple assignments in a row for a team.
+        userService.checkIfUserIsMentor(mentorUserName);
+        User mentor = userService.findUserByName(mentorUserName);
         assessmentService.saveAssessmentsToActivity(activityName, mentor, newAssessments);
         TeamDetails updatedTeamDetails = teamService.getTeamDetailsFromAnActivity(activityName, teamName);
         return ResponseEntity.ok(updatedTeamDetails);
