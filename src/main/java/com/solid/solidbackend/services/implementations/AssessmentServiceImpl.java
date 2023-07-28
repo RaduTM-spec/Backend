@@ -21,14 +21,12 @@ public class AssessmentServiceImpl implements AssessmentService {
 
     private final AssessmentRepository assessmentRepository;
     private final UserRepository userRepository;
-    private final UserService userService;
     private final ActivityRepository activityRepository;
 
     @Autowired
-    public AssessmentServiceImpl(AssessmentRepository assessmentRepository, UserRepository userRepository, UserService userService, ActivityRepository activityRepository) {
+    public AssessmentServiceImpl(AssessmentRepository assessmentRepository, UserRepository userRepository, ActivityRepository activityRepository) {
         this.assessmentRepository = assessmentRepository;
         this.userRepository = userRepository;
-        this.userService = userService;
         this.activityRepository = activityRepository;
     }
 
@@ -43,7 +41,8 @@ public class AssessmentServiceImpl implements AssessmentService {
     }
 
     @Override
-    public Assessment getAssessmentById(Long id) {
+    public Assessment getAssessmentById(Long id) throws AssessmentNotFoundByIdException {
+
         return assessmentRepository.findById(id).orElseThrow(
                 () -> new AssessmentNotFoundByIdException(id.toString())
         );

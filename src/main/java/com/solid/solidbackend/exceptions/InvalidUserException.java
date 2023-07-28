@@ -3,11 +3,11 @@ package com.solid.solidbackend.exceptions;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
-@ResponseStatus(HttpStatus.BAD_REQUEST)
+@ResponseStatus(HttpStatus.NOT_ACCEPTABLE)
 public class InvalidUserException extends RuntimeException {
     public InvalidUserException(String message)
     {
-        super(message);
+        super("Invalid user!");
     }
 
 }

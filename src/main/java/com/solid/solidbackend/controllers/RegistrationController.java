@@ -1,8 +1,8 @@
 package com.solid.solidbackend.controllers;
 
 import com.solid.solidbackend.entities.User;
-import com.solid.solidbackend.enums.Role;
 import com.solid.solidbackend.services.ActivityService;
+import com.solid.solidbackend.services.RegistrationService;
 import com.solid.solidbackend.services.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.extern.slf4j.Slf4j;
@@ -20,12 +20,12 @@ import org.springframework.web.bind.annotation.*;
 public class RegistrationController {
 
     private final UserService userService;
-    private final ActivityService activityService;
+    private final RegistrationService registrationService;
 
     @Autowired
-    public RegistrationController(UserService userService, ActivityService activityService) {
+    public RegistrationController(UserService userService, RegistrationService registrationService) {
         this.userService = userService;
-        this.activityService = activityService;
+        this.registrationService = registrationService;
     }
 
     /**
@@ -58,7 +58,7 @@ public class RegistrationController {
                                                                @RequestParam String teamName) {
 
         log.info(" > Creating a new member with username: {} and adding to team: {}", username, teamName);
-        User addedMember = userService.createAndAddMemberToTeam(username, teamName);
+        User addedMember = registrationService.createAndAddMemberToTeam(username, teamName);
         return ResponseEntity.ok(addedMember);
     }
 
@@ -67,6 +67,7 @@ public class RegistrationController {
      * Creates a new MENTOR and enrolls them in a new or existing activity.
      *
      * @param userName     The username of the new mentor to be created.
+     * @param create       Flag to check if the user wants to create a new activity or join existing one
      * @param activityName The name of the activity to be linked with the mentor.
      * @param dueDate      The due date for the mentor's activity.
      * @return A ResponseEntity containing the User object representing the newly created mentor.
@@ -74,13 +75,19 @@ public class RegistrationController {
     @PostMapping("/new/mentor")
     @Operation(summary = "creates new mentor and enrolls him in new or existing activity")
     public ResponseEntity<User> createMentorAndAddMentor(@RequestParam String userName,
+                                                         @RequestParam Boolean create,
                                                          @RequestParam String activityName,
                                                          @RequestParam String dueDate) {
 
+        User newMentor;
         log.info(" > Creating a new mentor with username: {}", userName);
-        User newMentor = userService.createNewUser(userName, Role.MENTOR);
-        // to handle the new mentor linking to existing/new activity
-        activityService.addNewMentorToActivity(activityName, newMentor, dueDate);
+
+        if (create) {
+            newMentor = registrationService.createAndAddMentorToNewActivity(activityName, userName, dueDate);
+        } else {
+            newMentor = registrationService.createAndAddMentorToExistingActivity(activityName, userName, dueDate);
+        }
+
         return ResponseEntity.ok(newMentor);
     }
 
@@ -98,7 +105,7 @@ public class RegistrationController {
                                                      @RequestParam String teamName) {
 
         log.info(" > Creating a new lead with username: {} and adding to team: {}", userName, teamName);
-        User user = userService.createAndAddLeadToTeam(userName, teamName);
+        User user = registrationService.createAndAddLeadToTeam(userName, teamName);
         return ResponseEntity.ok(user);
     }
 }
