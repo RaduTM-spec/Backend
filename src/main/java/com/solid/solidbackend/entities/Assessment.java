@@ -28,7 +28,7 @@ public class Assessment {
     private User user;
 
     @Column(nullable = false)
-    private float grade = 0.0f;
+    private Float grade = 0.0f;
 
     @Column(nullable = false)
     private boolean attended = false;

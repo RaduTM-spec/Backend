@@ -13,9 +13,7 @@ import com.solid.solidbackend.services.UserService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 
 
 @Service
@@ -23,17 +21,19 @@ public class ActivityServiceImpl implements ActivityService {
 
     private final ActivityRepository activityRepository;
     private final MentorActivityService mentorActivityService;
+    private final MentorActivityRepository mentorActivityRepository;
     private final UserRepository userRepository;
     private final TeamActivityRepository teamActivityRepository;
     private final TeamMembershipRepository teamMembershipRepository;
     private final TeamActivityService teamActivityService;
     private final UserService userService;
 
-    public ActivityServiceImpl(ActivityRepository activityRepository, MentorActivityService mentorActivityService, UserRepository userRepository,
+    public ActivityServiceImpl(ActivityRepository activityRepository, MentorActivityService mentorActivityService, MentorActivityRepository mentorActivityRepository, UserRepository userRepository,
                                TeamActivityRepository teamActivityRepository, TeamMembershipRepository teamMembershipRepository, TeamActivityService teamActivityService, UserService userService) {
 
         this.activityRepository = activityRepository;
         this.mentorActivityService = mentorActivityService;
+        this.mentorActivityRepository = mentorActivityRepository;
         this.userRepository = userRepository;
         this.teamActivityRepository = teamActivityRepository;
         this.teamMembershipRepository = teamMembershipRepository;
@@ -42,41 +42,63 @@ public class ActivityServiceImpl implements ActivityService {
     }
 
     @Override
+    @Transactional
     public Activity createAndJoinActivity(String userName, Activity activity) {
-
         User mentor = userService.getUserByName(userName);
+
         Activity newActivity = new Activity();
         newActivity.setName(activity.getName());
         newActivity.setCreator(mentor);
         newActivity.setDeadline(activity.getDeadline());
 
-        return activityRepository.save(newActivity);
+        Activity savedActivity = activityRepository.save(newActivity);
+
+        mentorActivityService.linkMentorWithActivity(mentor, savedActivity);
+
+        return savedActivity;
     }
 
     @Override
+    @Transactional
     public Activity getActivityByName(String activityName) {
         return activityRepository.findActivityByName(activityName).orElseThrow(
                 () -> new NoActivityFoundException(activityName)
         );
     }
 
+//    @Override
+//    public List<Activity> getUserActivities(String userName) {
+//        // Get user's team
+//        User user = userRepository.findByName(userName).orElseThrow(
+//                () -> new UserNotFoundException(userName)
+//        );
+//
+//        if (Objects.requireNonNull(userService.checkUserRole(user)) == Role.MENTOR) {
+////            userActivities.addAll(activityRepository.findActivitiesByCreator(user));
+//
+//            return new ArrayList<>(mentorActivityRepository.findActivitiesByMentor(user));
+//
+//        }
+//
+//        Team team = teamMembershipRepository.findTeamByUserId(user.getId());
+//
+//        // Use team's id to retrieve all activities
+//        List<TeamActivity> teamActivities = teamActivityRepository.findAllActivitiesByTeamId(team.getId());
+//        return teamActivities.stream().map(TeamActivity::getActivity).toList();
+//
+//    }
+
     @Override
     public List<Activity> getUserActivities(String userName) {
-        // Get user's team
-        User user = userRepository.findByName(userName).orElseThrow(
-                () -> new UserNotFoundException(userName)
-        );
+        User user = userService.getUserByName(userName);
 
-        if (Objects.requireNonNull(userService.checkUserRole(user)) == Role.MENTOR) {
-            throw new RuntimeException("This needs fixing!!");
+        if (user.getRole() == Role.MENTOR) {
+            return activityRepository.findActivitiesByUser(user);
         }
 
         Team team = teamMembershipRepository.findTeamByUserId(user.getId());
-
-        // Use team's id to retrieve all activities
         List<TeamActivity> teamActivities = teamActivityRepository.findAllActivitiesByTeamId(team.getId());
         return teamActivities.stream().map(TeamActivity::getActivity).toList();
-
     }
 
     @Override
@@ -95,11 +117,9 @@ public class ActivityServiceImpl implements ActivityService {
             newActivity.setCreator(newMentor);
             newActivity.setDeadline(dueDate);
 
-            // we do this because we need an activity object with an id already set
             Activity joinedActivity = activityRepository.save(newActivity);
 
             return mentorActivityService.linkMentorWithActivity(newMentor, joinedActivity);
-
         }
 
     }
