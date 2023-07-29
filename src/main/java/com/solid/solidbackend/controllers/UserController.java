@@ -1,4 +1,3 @@
-
 package com.solid.solidbackend.controllers;
 
 import com.solid.solidbackend.entities.*;
@@ -11,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
 
 
@@ -122,5 +122,15 @@ public class UserController {
         assessmentService.saveAssessmentsToActivity(activityName, mentor, newAssessments);
         TeamDetails updatedTeamDetails = teamService.getTeamDetailsFromAnActivity(activityName, teamName);
         return ResponseEntity.ok(updatedTeamDetails);
+    }
+
+    @Operation(summary = "removes a member from a the user's team")
+    @DeleteMapping("remove-member")
+    public ResponseEntity<Boolean> removeMemberFromTeam(@RequestParam String teamLeaderName,
+                                                        @RequestParam String removedMemberName,
+                                                        @RequestParam String teamName) {
+        log.info(" > Removing {} from {}", removedMemberName, teamName);
+        teamService.removeMemberFromTeam(teamLeaderName, removedMemberName, teamName);
+        return ResponseEntity.ok(true);
     }
 }

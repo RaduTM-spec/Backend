@@ -59,7 +59,11 @@ public class UserServiceImpl implements UserService {
     public void checkIfUserIsMentor(String userName) throws RoleNotAllowedException{
         User mentor = findUserByName(userName);
         if (mentor.getRole() != Role.MENTOR) throw new RoleNotAllowedException("MENTORS");
+    }
 
-
+    @Override
+    public void checkIfUserIsLeader(String userName) throws RoleNotAllowedException{
+        User user = findUserByName(userName);
+        if (user.getRole() != Role.TEAM_LEADER) throw new RoleNotAllowedException("TEAM LEADERS");
     }
 }

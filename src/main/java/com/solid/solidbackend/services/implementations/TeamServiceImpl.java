@@ -1,6 +1,7 @@
 package com.solid.solidbackend.services.implementations;
 
 import com.solid.solidbackend.entities.*;
+import com.solid.solidbackend.enums.Role;
 import com.solid.solidbackend.exceptions.*;
 import com.solid.solidbackend.repositories.apprepository.*;
 import com.solid.solidbackend.services.TeamService;
@@ -42,23 +43,18 @@ public class TeamServiceImpl implements TeamService {
         return teamOptional.get();
     }
 
-    public Team createTeam(String teamName, User teamLeader) throws TeamExistsException
-    {
+    public Team createTeam(String teamName, User teamLeader) throws TeamExistsException {
         Optional<Team> teamOptional = teamRepository.findByName(teamName);
 
-        if(teamOptional.isPresent())
+        if (teamOptional.isPresent())
             throw new TeamExistsException(teamName);
 
         Team team = new Team(teamName, teamLeader);
         return teamRepository.save(team);
     }
 
-    public TeamDetails getTeamDetailsFromAnActivity(String activityName, String teamname) {
-        List<TeamMembership> memberships = teamMembershipRepository.findAllTeamMembershipsByTeamName(teamname);
-
-        List<User> members = memberships.stream()
-                .map(TeamMembership::getUser)
-                .collect(Collectors.toList());
+    public TeamDetails getTeamDetailsFromAnActivity(String activityName, String teamName) {
+        List<User> members = getMembers(teamName);
 
         // for each member, i get all assessments. From there i extract all grades and attendances.
         List<Float> gradesOfMembers = new LinkedList<>();
@@ -94,6 +90,34 @@ public class TeamServiceImpl implements TeamService {
     }
 
     @Override
+    public List<User> getMembers(String teamName) {
+        List<TeamMembership> memberships = teamMembershipRepository.findAllTeamMembershipsByTeamName(teamName);
+        return memberships.stream().map(TeamMembership::getUser).collect(Collectors.toList());
+    }
+
+    @Override
+    public void removeMemberFromTeam(String leaderName, String removedMemberName, String teamName) {
+        User leader = userRepository.findByName(leaderName).orElseThrow(
+                () -> new UserNotFoundException(leaderName));
+        if (leader.getRole() != Role.TEAM_LEADER) throw new RoleNotAllowedException("TEAM LEADERS");
+
+        User removedMember = userRepository.findByName(removedMemberName).orElseThrow(
+                () -> new UserNotFoundException(removedMemberName));
+
+        List<User> members = getMembers(teamName);
+        if (!members.contains(leader)){
+            throw new TeamMembershipNotFoundException("You do not belong to this team");
+        }
+
+        if (members.contains(removedMember)) {
+            TeamMembership teamMembership = teamMembershipRepository.findByUserId(removedMember.getId());
+            teamMembershipRepository.delete(teamMembership);
+        } else {
+            throw new TeamMembershipNotFoundException("User is not a member of this team");
+        }
+    }
+
+    @Override
     public List<Team> getTeamsByActivity(String username, String activityName) {
 
         Activity selectedActivity = activityRepository.findActivityByName(activityName).orElseThrow(
@@ -103,9 +127,6 @@ public class TeamServiceImpl implements TeamService {
         return teamActivities.stream().map(TeamActivity::getTeam).collect(Collectors.toList());
 
     }
-
-
-
 
 
     @Override

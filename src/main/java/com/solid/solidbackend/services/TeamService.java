@@ -17,6 +17,10 @@ public interface TeamService {
 
     TeamDetails getTeamDetailsFromAnActivity(String activityName, String teamName);
 
+    List<User> getMembers(String teamName);
+
+    void removeMemberFromTeam(String leaderName, String removedMemberName, String teamName);
+
     Team createTeam(String teamName, User teamLeader) throws TeamExistsException;
 
 }
