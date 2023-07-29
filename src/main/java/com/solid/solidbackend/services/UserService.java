@@ -17,4 +17,6 @@ public interface UserService {
     User createUser(String name, Role role) throws UserExistsException;
 
     void checkIfUserIsMentor(String userName) throws RoleNotAllowedException;
+
+    void checkIfUserIsLeader(String userName) throws RoleNotAllowedException;
 }
