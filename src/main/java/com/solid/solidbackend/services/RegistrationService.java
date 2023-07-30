@@ -18,6 +18,8 @@ public interface RegistrationService {
     @Transactional
     UserTeamDTO createMentor_createActivity_addMentorToActivity(String activityName, String userName, String dueDate);
 
+
+    UserTeamDTO authenticateUser(String name);
 }
 
 
