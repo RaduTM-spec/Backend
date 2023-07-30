@@ -17,7 +17,7 @@ public interface TeamMembershipRepository extends JpaRepository <TeamMembership,
     List<TeamMembership> findAllTeamMembershipsByTeamName(String teamName);
 
     @Query("SELECT tm.team FROM TeamMembership tm WHERE tm.user.id = :userId")
-    Team findTeamByUserId(Long userId);
+    Optional<Team> findTeamByUserId(Long userId);
 
     TeamMembership findByUserId(Long userId);
 

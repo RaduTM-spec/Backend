@@ -1,7 +1,7 @@
 package com.solid.solidbackend.services;
 
 import com.solid.solidbackend.entities.Team;
-import com.solid.solidbackend.entities.TeamDetails;
+import com.solid.solidbackend.dtos.TeamDetailsDTO;
 import com.solid.solidbackend.entities.User;
 import com.solid.solidbackend.exceptions.TeamExistsException;
 
@@ -15,7 +15,7 @@ public interface TeamService {
 
     User addUserToTeam(String username, String teamName);
 
-    TeamDetails getTeamDetailsFromAnActivity(String activityName, String teamName);
+    TeamDetailsDTO getTeamDetailsFromAnActivity(String activityName, String teamName);
 
     List<User> getMembers(String teamName);
 
@@ -23,4 +23,5 @@ public interface TeamService {
 
     Team createTeam(String teamName, User teamLeader) throws TeamExistsException;
 
+    Team getTeamByUserId(Long userId);
 }

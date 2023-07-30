@@ -1,5 +1,6 @@
 package com.solid.solidbackend.services.implementations;
 
+import com.solid.solidbackend.dtos.TeamDetailsDTO;
 import com.solid.solidbackend.entities.*;
 import com.solid.solidbackend.enums.Role;
 import com.solid.solidbackend.exceptions.*;
@@ -37,7 +38,7 @@ public class TeamServiceImpl implements TeamService {
     public Team getTeamByName(String name) {
         Optional<Team> teamOptional = teamRepository.findByName(name);
 
-        if (!teamOptional.isPresent())
+        if (teamOptional.isEmpty())
             throw new TeamNotFoundException(name);
 
         return teamOptional.get();
@@ -53,7 +54,7 @@ public class TeamServiceImpl implements TeamService {
         return teamRepository.save(team);
     }
 
-    public TeamDetails getTeamDetailsFromAnActivity(String activityName, String teamName) {
+    public TeamDetailsDTO getTeamDetailsFromAnActivity(String activityName, String teamName) {
         List<User> members = getMembers(teamName);
 
         // for each member, i get all assessments. From there i extract all grades and attendances.
@@ -86,7 +87,7 @@ public class TeamServiceImpl implements TeamService {
         if (teamGrade != 0) // check for division by 0
             teamGrade /= gradesOfMembers.size();
 
-        return new TeamDetails(members, gradesOfMembers, attendancesOfMembers, teamGrade);
+        return new TeamDetailsDTO(members, gradesOfMembers, attendancesOfMembers, teamGrade);
     }
 
     @Override
@@ -149,6 +150,14 @@ public class TeamServiceImpl implements TeamService {
         teamMembershipRepository.save(tm);
 
         return newUser;
+    }
+
+    @Override
+    public Team getTeamByUserId(Long userId) {
+
+        return teamMembershipRepository.findTeamByUserId(userId).orElseThrow(
+                () -> new TeamMembershipNotFoundException("No team membership found for user with ID:" + userId)
+        );
     }
 
 }
