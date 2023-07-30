@@ -44,10 +44,7 @@ public class RegistrationController {
     public ResponseEntity<UserTeamDTO> authenticateUser(@RequestParam String name) {
 
         log.info(" > Authenticating existing user: {}", name);
-        User authenticatedUser = userService.findUserByName(name);
-        log.info(" > User authenticated successfully!");
-        Team team = teamService.getTeamByUserId(authenticatedUser.getId());
-        UserTeamDTO userTeamDTO = new UserTeamDTO(authenticatedUser, team);
+        UserTeamDTO userTeamDTO = registrationService.authenticateUser(name);
         return ResponseEntity.ok(userTeamDTO);
     }
 

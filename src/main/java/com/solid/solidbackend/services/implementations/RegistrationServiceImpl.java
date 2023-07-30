@@ -86,6 +86,20 @@ public class RegistrationServiceImpl implements RegistrationService {
         return new UserTeamDTO(newMentor);
     }
 
+    @Override
+    public UserTeamDTO authenticateUser(String name) {
+
+        User authenticatedUser = userService.findUserByName(name);
+
+        if (authenticatedUser.getRole() == Role.MENTOR) {
+            return new UserTeamDTO(authenticatedUser);
+        } else {
+            Team team = teamService.getTeamByUserId(authenticatedUser.getId());
+            return new UserTeamDTO(authenticatedUser, team);
+        }
+
+    }
+
 }
 
 
