@@ -1,5 +1,6 @@
 package com.solid.solidbackend.controllers;
 
+import com.solid.solidbackend.dtos.TeamDetailsDTO;
 import com.solid.solidbackend.entities.*;
 import com.solid.solidbackend.services.ActivityService;
 import com.solid.solidbackend.services.AssessmentService;
@@ -100,28 +101,29 @@ public class UserController {
 
     @GetMapping("/team-details")
     @Operation(summary = "gets all the details of the team and its performance in an activity")
-    public ResponseEntity<TeamDetails> getTeamDetailsFromAnActivity(@RequestParam String mentorUserName,
-                                                                    @RequestParam String activityName,
-                                                                    @RequestParam String teamName) {
-        // it works now
-        userService.checkIfUserIsMentor(mentorUserName); // this has to be done in service but anyways...
+    public ResponseEntity<TeamDetailsDTO> getTeamDetailsFromAnActivity(@RequestParam String mentorUserName,
+                                                                       @RequestParam String activityName,
+                                                                       @RequestParam String teamName) {
+
         log.info(" > Fetching team details for activity: {} and team: {}", activityName, teamName);
-        TeamDetails td = teamService.getTeamDetailsFromAnActivity(activityName, teamName);
+        TeamDetailsDTO td = teamService.getTeamDetailsFromAnActivity(activityName, teamName);
         return ResponseEntity.ok(td);
     }
 
+
+
     @Operation(summary = "creates a new session assessment for a team in an activity")
     @PostMapping("/team-assessment")
-    public ResponseEntity<TeamDetails> createNewSessionAssessmentOnTeam(@RequestParam String mentorUserName,
-                                                                        @RequestParam String activityName,
-                                                                        @RequestParam String teamName,
-                                                                        @RequestBody List<Assessment> newAssessments) {
+    public ResponseEntity<TeamDetailsDTO> createNewSessionAssessmentOnTeam(@RequestParam String mentorUserName,
+                                                                           @RequestParam String activityName,
+                                                                           @RequestParam String teamName,
+                                                                           @RequestBody List<Assessment> newAssessments) {
         // Actually allows multiple assignments in a row for a team.
         userService.checkIfUserIsMentor(mentorUserName);
         User mentor = userService.findUserByName(mentorUserName);
         assessmentService.saveAssessmentsToActivity(activityName, mentor, newAssessments);
-        TeamDetails updatedTeamDetails = teamService.getTeamDetailsFromAnActivity(activityName, teamName);
-        return ResponseEntity.ok(updatedTeamDetails);
+        TeamDetailsDTO updatedTeamDetailsDTO = teamService.getTeamDetailsFromAnActivity(activityName, teamName);
+        return ResponseEntity.ok(updatedTeamDetailsDTO);
     }
 
     @Operation(summary = "removes a member from a the user's team")

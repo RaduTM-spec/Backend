@@ -4,6 +4,7 @@ import com.solid.solidbackend.entities.*;
 import com.solid.solidbackend.enums.Role;
 import com.solid.solidbackend.exceptions.RoleNotAllowedException;
 import com.solid.solidbackend.exceptions.ActivityNotFoundException;
+import com.solid.solidbackend.exceptions.TeamMembershipNotFoundException;
 import com.solid.solidbackend.exceptions.UserNotFoundException;
 import com.solid.solidbackend.repositories.apprepository.*;
 import com.solid.solidbackend.services.ActivityService;
@@ -75,7 +76,9 @@ public class ActivityServiceImpl implements ActivityService {
             return activityRepository.findActivitiesByUser(user);
         }
 
-        Team team = teamMembershipRepository.findTeamByUserId(user.getId());
+        Team team = teamMembershipRepository.findTeamByUserId(user.getId()).orElseThrow(
+                () -> new TeamMembershipNotFoundException("No team membership found for user with ID: " + user.getId())
+        );
         List<TeamActivity> teamActivities = teamActivityRepository.findAllActivitiesByTeamId(team.getId());
         return teamActivities.stream().map(TeamActivity::getActivity).toList();
     }
@@ -120,7 +123,9 @@ public class ActivityServiceImpl implements ActivityService {
         switch (joiningUser.getRole()) {
             case MENTOR -> mentorActivityService.linkMentorWithActivity(joiningUser, joinedActivity);
             case TEAM_LEADER -> {
-                Team joiningTeam = teamMembershipRepository.findTeamByUserId(joiningUser.getId());
+                Team joiningTeam = teamMembershipRepository.findTeamByUserId(joiningUser.getId()).orElseThrow(
+                        () -> new TeamMembershipNotFoundException("No team membership found!")
+                );
                 teamActivityService.joinActivityByTeam(joinedActivity, joiningTeam);
             }
             default -> {

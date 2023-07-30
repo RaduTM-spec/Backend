@@ -1,7 +1,10 @@
 package com.solid.solidbackend.controllers;
 
+import com.solid.solidbackend.dtos.UserTeamDTO;
+import com.solid.solidbackend.entities.Team;
 import com.solid.solidbackend.entities.User;
 import com.solid.solidbackend.services.RegistrationService;
+import com.solid.solidbackend.services.TeamService;
 import com.solid.solidbackend.services.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.extern.slf4j.Slf4j;
@@ -21,11 +24,13 @@ public class RegistrationController {
 
     private final UserService userService;
     private final RegistrationService registrationService;
+    private final TeamService teamService;
 
     @Autowired
-    public RegistrationController(UserService userService, RegistrationService registrationService) {
+    public RegistrationController(UserService userService, RegistrationService registrationService, TeamService teamService) {
         this.userService = userService;
         this.registrationService = registrationService;
+        this.teamService = teamService;
     }
 
     /**
@@ -36,12 +41,14 @@ public class RegistrationController {
      */
     @PostMapping("/authenticate")
     @Operation(summary = "authenticate existing user")
-    public ResponseEntity<User> authenticateUser(@RequestParam String name) {
+    public ResponseEntity<UserTeamDTO> authenticateUser(@RequestParam String name) {
 
         log.info(" > Authenticating existing user: {}", name);
         User authenticatedUser = userService.findUserByName(name);
         log.info(" > User authenticated successfully!");
-        return ResponseEntity.ok(authenticatedUser);
+        Team team = teamService.getTeamByUserId(authenticatedUser.getId());
+        UserTeamDTO userTeamDTO = new UserTeamDTO(authenticatedUser, team);
+        return ResponseEntity.ok(userTeamDTO);
     }
 
 
@@ -50,15 +57,15 @@ public class RegistrationController {
      *
      * @param username The username of the new member to be created.
      * @param teamName The name of the team in which the new member will be enrolled.
-     * @return A ResponseEntity containing the User object representing the newly created member.
+     * @return A ResponseEntity with the UserTeamDTO consisting of the newly created member and his team.
      */
     @PostMapping("/new/member")
     @Operation(summary = "creates new member and enrolls him in an existing team")
-    public ResponseEntity<User> createMemberAndAddMemberToTeam(@RequestParam String username,
-                                                               @RequestParam String teamName) {
+    public ResponseEntity<UserTeamDTO> createMemberAndAddMemberToTeam(@RequestParam String username,
+                                                                      @RequestParam String teamName) {
 
         log.info(" > Creating a new member with username: {} and adding to team: {}", username, teamName);
-        User addedMember = registrationService.createMember_addMemberToTeam(username, teamName);
+        UserTeamDTO addedMember = registrationService.createMember_addMemberToTeam(username, teamName);
         return ResponseEntity.ok(addedMember);
     }
 
@@ -70,25 +77,25 @@ public class RegistrationController {
      * @param create       Flag to check if the user wants to create a new activity or join existing one
      * @param activityName The name of the activity to be linked with the mentor.
      * @param dueDate      The due date for the mentor's activity.
-     * @return A ResponseEntity containing the User object representing the newly created mentor.
+     * @return A ResponseEntity containing the UserTeamDTO object which contains the newly created mentor.
      */
     @PostMapping("/new/mentor")
     @Operation(summary = "creates new mentor and enrolls him in new or existing activity")
-    public ResponseEntity<User> createMentorAndAddMentor(@RequestParam String userName,
+    public ResponseEntity<UserTeamDTO> createMentorAndAddMentor(@RequestParam String userName,
                                                          @RequestParam Boolean create,
                                                          @RequestParam String activityName,
                                                          @RequestParam String dueDate) {
 
-        User newMentor;
+        UserTeamDTO newMentorDTO;
         log.info(" > Creating a new mentor with username: {}", userName);
 
         if (create) {
-            newMentor = registrationService.createMentor_createActivity_addMentorToActivity(activityName, userName, dueDate);
+            newMentorDTO = registrationService.createMentor_createActivity_addMentorToActivity(activityName, userName, dueDate);
         } else {
-            newMentor = registrationService.createMentor_addMentorToActivity(activityName, userName, dueDate);
+            newMentorDTO = registrationService.createMentor_addMentorToActivity(activityName, userName, dueDate);
         }
 
-        return ResponseEntity.ok(newMentor);
+        return ResponseEntity.ok(newMentorDTO);
     }
 
 
@@ -101,11 +108,11 @@ public class RegistrationController {
      */
     @PostMapping("/new/lead")
     @Operation(summary = "creates new lead and creates a new team for him")
-    public ResponseEntity<User> createLeadAndAddLead(@RequestParam String userName,
+    public ResponseEntity<UserTeamDTO> createLeadAndAddLead(@RequestParam String userName,
                                                      @RequestParam String teamName) {
 
         log.info(" > Creating a new leader with username: {} and adding to team: {}", userName, teamName);
-        User user = registrationService.createLeader_addLeaderToTeam(userName, teamName);
-        return ResponseEntity.ok(user);
+        UserTeamDTO userTeamDTO = registrationService.createLeader_addLeaderToTeam(userName, teamName);
+        return ResponseEntity.ok(userTeamDTO);
     }
 }
