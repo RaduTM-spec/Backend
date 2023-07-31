@@ -82,10 +82,11 @@ public class UserController {
     @Operation(summary = "creates an activity and enrolls the user in it")
     @PostMapping("/activities")
     public ResponseEntity<Activity> createActivity(@RequestParam String userName,
-                                                   @RequestBody Activity mentorActivity) {
+                                                   @RequestParam String activityName,
+                                                   @RequestParam String deadline) {
         userService.checkIfUserIsMentor(userName);
-        log.info(" > Creating a new activity named {} for mentor: {}", mentorActivity.getName(), userName);
-        Activity activity = activityService.createAndJoinActivity(userName, mentorActivity);
+        log.info(" > Creating a new activity named {} for mentor: {}", activityName, userName);
+        Activity activity = activityService.createAndJoinActivity(userName, activityName, deadline);
         return ResponseEntity.ok(activity);
     }
 

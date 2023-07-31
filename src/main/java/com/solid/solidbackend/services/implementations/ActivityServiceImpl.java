@@ -44,13 +44,13 @@ public class ActivityServiceImpl implements ActivityService {
 
     @Override
     @Transactional
-    public Activity createAndJoinActivity(String userName, Activity activity) {
+    public Activity createAndJoinActivity(String userName, String activityName, String deadline) {
         User mentor = userService.findUserByName(userName);
 
         Activity newActivity = new Activity();
-        newActivity.setName(activity.getName());
+        newActivity.setName(activityName);
         newActivity.setCreator(mentor);
-        newActivity.setDeadline(activity.getDeadline());
+        newActivity.setDeadline(deadline);
 
         Activity savedActivity = activityRepository.save(newActivity);
 
