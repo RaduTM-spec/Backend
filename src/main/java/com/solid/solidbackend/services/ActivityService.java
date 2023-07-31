@@ -14,7 +14,7 @@ public interface ActivityService {
 
     MentorActivity addNewMentorToActivity(String activityName, User newMentor, String dueDate);
 
-    Activity createAndJoinActivity(String userName, Activity activity);
+    Activity createAndJoinActivity(String userName, String activityName, String deadline);
 
     Activity joinActivity(String userName, String activityName);
 
