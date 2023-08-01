@@ -2,10 +2,7 @@ package com.solid.solidbackend.services.implementations;
 
 import com.solid.solidbackend.entities.*;
 import com.solid.solidbackend.enums.Role;
-import com.solid.solidbackend.exceptions.RoleNotAllowedException;
-import com.solid.solidbackend.exceptions.ActivityNotFoundException;
-import com.solid.solidbackend.exceptions.TeamMembershipNotFoundException;
-import com.solid.solidbackend.exceptions.UserNotFoundException;
+import com.solid.solidbackend.exceptions.*;
 import com.solid.solidbackend.repositories.apprepository.*;
 import com.solid.solidbackend.services.ActivityService;
 import com.solid.solidbackend.services.MentorActivityService;
@@ -46,6 +43,10 @@ public class ActivityServiceImpl implements ActivityService {
     @Transactional
     public Activity createAndJoinActivity(String userName, String activityName, String deadline) {
         User mentor = userService.findUserByName(userName);
+
+        activityRepository.findActivityByName(activityName).orElseThrow(
+                () -> new ActivityAlreadyExistsException(activityName)
+        );
 
         Activity newActivity = new Activity();
         newActivity.setName(activityName);
