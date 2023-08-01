@@ -1,6 +1,7 @@
 package com.solid.solidbackend.controllers;
 
 import com.solid.solidbackend.dtos.TeamDetailsDTO;
+import com.solid.solidbackend.dtos.TeamGradeDTO;
 import com.solid.solidbackend.entities.*;
 import com.solid.solidbackend.services.ActivityService;
 import com.solid.solidbackend.services.AssessmentService;
@@ -54,22 +55,20 @@ public class UserController {
 
 
     /**
-     * Fetches all teams enrolled in a specific activity for a given user.
+     * Fetches all teams enrolled in a specific activity for a given mentor.
      *
-     * @param userName     The username of the user for whom the teams are to be fetched.
+     * @param mentorName     The username of the user for whom the teams are to be fetched.
      * @param activityName The name of the activity for which the teams are to be fetched.
      * @return A ResponseEntity containing a list of Team objects representing the teams registered in the activity.
      */
-    @Operation(summary = "gets all teams enrolled in a specific activity")
+    @Operation(summary = "gets all teams enroleed in a specific activity and it s grade")
     @GetMapping("/activity-teams")
-    public ResponseEntity<List<Team>> getActivityTeams(@RequestParam String userName,
-                                                       @RequestParam String activityName) {
-        userService.checkIfUserIsMentor(userName);
-        log.info(" > Fetching teams registered in activity: {}", activityName);
-        List<Team> teams = teamService.getTeamsByActivity(userName, activityName);
-        return ResponseEntity.ok(teams);
+    public ResponseEntity<List<TeamGradeDTO>> getActivityTeamsAndTheirGrades(@RequestParam String mentorName, @RequestParam String activityName)
+    {
+        userService.checkIfUserIsMentor(mentorName);
+        List<TeamGradeDTO> list = teamService.getActivityTeamsWithTheirGrades(activityName);
+        return ResponseEntity.ok(list);
     }
-
 
     @Operation(summary = "gets all assessments received by a user in activities")
     @GetMapping("/user-assessments")
@@ -126,6 +125,7 @@ public class UserController {
         TeamDetailsDTO updatedTeamDetailsDTO = teamService.getTeamDetailsFromAnActivity(activityName, teamName);
         return ResponseEntity.ok(updatedTeamDetailsDTO);
     }
+
 
     @Operation(summary = "removes a member from a the user's team")
     @DeleteMapping("remove-member")

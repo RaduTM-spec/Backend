@@ -1,11 +1,13 @@
 package com.solid.solidbackend.services.implementations;
 
 import com.solid.solidbackend.dtos.TeamDetailsDTO;
+import com.solid.solidbackend.dtos.TeamGradeDTO;
 import com.solid.solidbackend.entities.*;
 import com.solid.solidbackend.enums.Role;
 import com.solid.solidbackend.exceptions.*;
 import com.solid.solidbackend.repositories.apprepository.*;
 import com.solid.solidbackend.services.TeamService;
+import org.apache.commons.lang3.NotImplementedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -16,7 +18,6 @@ import java.util.stream.Collectors;
 
 @Service
 public class TeamServiceImpl implements TeamService {
-
     private final TeamRepository teamRepository;
     private final TeamActivityRepository teamActivityRepository;
     private final TeamMembershipRepository teamMembershipRepository;
@@ -38,7 +39,7 @@ public class TeamServiceImpl implements TeamService {
     public Team getTeamByName(String name) {
         Optional<Team> teamOptional = teamRepository.findByName(name);
 
-        if (teamOptional.isEmpty())
+        if (!teamOptional.isPresent())
             throw new TeamNotFoundException(name);
 
         return teamOptional.get();
@@ -53,7 +54,7 @@ public class TeamServiceImpl implements TeamService {
         Team team = new Team(teamName, teamLeader);
         return teamRepository.save(team);
     }
-
+    @Override
     public TeamDetailsDTO getTeamDetailsFromAnActivity(String activityName, String teamName) {
         List<User> members = getMembers(teamName);
 
@@ -75,21 +76,37 @@ public class TeamServiceImpl implements TeamService {
             if (memberAssessments.size() != 0) // check for division by 0
                 meanOfAllGrades /= memberAssessments.size();
 
-            gradesOfMembers.add((Float) meanOfAllGrades);
-            attendancesOfMembers.add((Integer) attendanceCount);
+            gradesOfMembers.add(meanOfAllGrades);
+            attendancesOfMembers.add(attendanceCount);
         }
 
         Float teamGrade = 0f;
         for (var memberGrade :
                 gradesOfMembers) {
-            teamGrade += memberGrade;
+            teamGrade += memberGrade == null? 0f : memberGrade;
         }
-        if (teamGrade != 0) // check for division by 0
+        if (gradesOfMembers.size() != 0) // check for division by 0
             teamGrade /= gradesOfMembers.size();
 
         return new TeamDetailsDTO(members, gradesOfMembers, attendancesOfMembers, teamGrade);
     }
+    @Override
+    public  List<TeamGradeDTO> getActivityTeamsWithTheirGrades(String activityName)
+    {
+        // it doesn t extract any memberships
+        var memberships = teamActivityRepository.findAllByActivityName(activityName);
 
+        List<Team> teams = memberships.stream().map(TeamActivity::getTeam).collect(Collectors.toList());
+
+        List<TeamGradeDTO> teamGradeDTOS = new LinkedList<>();
+        for (var team :
+                teams) {
+            TeamDetailsDTO teamDetailsDTO = getTeamDetailsFromAnActivity(activityName, team.getName());
+            teamGradeDTOS.add(new TeamGradeDTO(team, teamDetailsDTO.teamGrade));
+        }
+
+        return teamGradeDTOS;
+    }
     @Override
     public List<User> getMembers(String teamName) {
         List<TeamMembership> memberships = teamMembershipRepository.findAllTeamMembershipsByTeamName(teamName);
@@ -114,18 +131,21 @@ public class TeamServiceImpl implements TeamService {
             TeamMembership teamMembership = teamMembershipRepository.findByUserId(removedMember.getId());
             teamMembershipRepository.delete(teamMembership);
         } else {
-            throw new TeamMembershipNotFoundException("User is not a member of this team");
+            throw new TeamMembershipNotFoundException("User is not a member of this team, so cannot be deleted.");
         }
     }
 
     @Override
     public List<Team> getTeamsByActivity(String username, String activityName) {
 
-        Activity selectedActivity = activityRepository.findActivityByName(activityName).orElseThrow(
-                () -> new ActivityNotFoundException(activityName)
-        );
-        List<TeamActivity> teamActivities = teamActivityRepository.findByActivity_Id(selectedActivity.getId());
-        return teamActivities.stream().map(TeamActivity::getTeam).collect(Collectors.toList());
+        throw new NotImplementedException();
+        // here the method was not even working. But since is not used, it' s ok.
+        // Activity selectedActivity = activityRepository.findActivityByName(activityName).orElseThrow(
+        //         () -> new ActivityNotFoundException(activityName)
+        // );
+        // var x = teamActivityRepository.findById(selectedActivity.getId()).get();
+        // List<TeamActivity> teamActivities = teamActivityRepository.findById(selectedActivity.getId()).get();
+        // return teamActivities.stream().map(TeamActivity::getTeam).collect(Collectors.toList());
 
     }
 
@@ -151,7 +171,6 @@ public class TeamServiceImpl implements TeamService {
 
         return newUser;
     }
-
     @Override
     public Team getTeamByUserId(Long userId) {
 
@@ -159,5 +178,4 @@ public class TeamServiceImpl implements TeamService {
                 () -> new TeamMembershipNotFoundException("No team membership found for user with ID:" + userId)
         );
     }
-
 }

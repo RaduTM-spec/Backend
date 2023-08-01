@@ -14,6 +14,6 @@ public class TeamDetailsDTO {
         this.members = members;
         this.gradesPerMember = gradesPerMember;
         this.attendancesPerMember = attendancesPerMember;
-        this.teamGrade = teamGrade;
+        this.teamGrade = teamGrad;
     }
 }
