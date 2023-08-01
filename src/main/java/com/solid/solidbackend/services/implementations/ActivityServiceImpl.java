@@ -44,9 +44,9 @@ public class ActivityServiceImpl implements ActivityService {
     public Activity createAndJoinActivity(String userName, String activityName, String deadline) {
         User mentor = userService.findUserByName(userName);
 
-        activityRepository.findActivityByName(activityName).orElseThrow(
-                () -> new ActivityAlreadyExistsException(activityName)
-        );
+        if (activityRepository.findActivityByName(activityName).isPresent()) {
+            throw new ActivityAlreadyExistsException(activityName);
+        }
 
         Activity newActivity = new Activity();
         newActivity.setName(activityName);
