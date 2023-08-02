@@ -62,9 +62,10 @@ public class TeamServiceImpl implements TeamService {
         Team team = new Team(teamName, teamLeader);
         return teamRepository.save(team);
     }
+
+
     @Override
     public TeamDetailsDTO getTeamDetailsFromAnActivity(String activityName, String teamName) {
-
         // Fetch activity by name
         Activity activity = activityRepository.findActivityByName(activityName)
                 .orElseThrow(() -> new ActivityNotFoundException(activityName));
@@ -78,35 +79,41 @@ public class TeamServiceImpl implements TeamService {
         // for each member, i get all assessments. From there i extract all grades and attendances.
         List<Float> gradesOfMembers = new LinkedList<>();
         List<Integer> attendancesOfMembers = new LinkedList<>();
-        for (var member :
-                members) {
+        for (var member : members) {
             List<Assessment> memberAssessments = assessmentRepository.findAllByUserIdAndActivity_Id(member.getId(), activity.getId());
 
             float meanOfAllGrades = 0f;
             int attendanceCount = 0;
-            for (var ass :
-                    memberAssessments) {
-                meanOfAllGrades += ass.getGrade();
+            for (var ass : memberAssessments) {
+                // Check if the grade is greater than 10 and set it to 10 if needed
+                float grade = ass.getGrade() > 10f ? 10f : ass.getGrade();
+                meanOfAllGrades += grade;
                 if (ass.isAttended())
                     attendanceCount++;
             }
-            if (memberAssessments.size() != 0) // check for division by 0
+            if (!memberAssessments.isEmpty()) // check for division by 0
                 meanOfAllGrades /= memberAssessments.size();
+
+            // Round the mean grade to one decimal place
+            meanOfAllGrades = Math.round(meanOfAllGrades * 10) / 10.0f;
 
             gradesOfMembers.add(meanOfAllGrades);
             attendancesOfMembers.add(attendanceCount);
         }
 
         Float teamGrade = 0f;
-        for (var memberGrade :
-                gradesOfMembers) {
-            teamGrade += memberGrade == null? 0f : memberGrade;
+        for (var memberGrade : gradesOfMembers) {
+            teamGrade += memberGrade == null ? 0f : memberGrade;
         }
-        if (gradesOfMembers.size() != 0) // check for division by 0
+        if (!gradesOfMembers.isEmpty()) // check for division by 0
             teamGrade /= gradesOfMembers.size();
+
+        // Round the team grade to one decimal place
+        teamGrade = Math.round(teamGrade * 10) / 10.0f;
 
         return new TeamDetailsDTO(members, gradesOfMembers, attendancesOfMembers, teamGrade);
     }
+
 
 
     @Override
