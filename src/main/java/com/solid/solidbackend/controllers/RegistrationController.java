@@ -22,22 +22,18 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/")
 public class RegistrationController {
 
-    private final UserService userService;
     private final RegistrationService registrationService;
-    private final TeamService teamService;
 
     @Autowired
-    public RegistrationController(UserService userService, RegistrationService registrationService, TeamService teamService) {
-        this.userService = userService;
+    public RegistrationController(RegistrationService registrationService) {
         this.registrationService = registrationService;
-        this.teamService = teamService;
     }
 
     /**
      * Authenticates an existing user.
      *
      * @param name The name of the user to be authenticated.
-     * @return A ResponseEntity containing the User object representing the authenticated user.
+     * @return A ResponseEntity containing the authenticated User object and his Team(null in case of mentors).
      */
     @PostMapping("/authenticate")
     @Operation(summary = "authenticate existing user")
@@ -74,7 +70,7 @@ public class RegistrationController {
      * @param create       Flag to check if the user wants to create a new activity or join existing one
      * @param activityName The name of the activity to be linked with the mentor.
      * @param dueDate      The due date for the mentor's activity.
-     * @return A ResponseEntity containing the UserTeamDTO object which contains the newly created mentor.
+     * @return A ResponseEntity containing the UserTeamDTO object which contains the newly created mentor and a null Team;.
      */
     @PostMapping("/new/mentor")
     @Operation(summary = "creates new mentor and enrolls him in new or existing activity")
@@ -101,7 +97,7 @@ public class RegistrationController {
      *
      * @param userName The username of the new lead to be created.
      * @param teamName The name of the new team to be created and associated with the lead.
-     * @return A ResponseEntity containing the User object representing the newly created lead.
+     * @return A ResponseEntity containing the User object representing the newly created lead and his Team.
      */
     @PostMapping("/new/lead")
     @Operation(summary = "creates new lead and creates a new team for him")

@@ -4,6 +4,9 @@ import com.solid.solidbackend.entities.User;
 
 import java.util.List;
 
+/**
+ * Data Transfer Object representing the details of an entire team's performance in an activity, including members.
+ */
 public class TeamDetailsDTO {
     public List<User> members;
     public List<Float> gradesPerMember;

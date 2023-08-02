@@ -19,17 +19,11 @@ public class Activity {
 
     private String name;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne
     @JoinColumn(name = "creatorId", referencedColumnName = "id")
     private User creator;
 
     private String deadline;
-//
-//    @ManyToMany(mappedBy = "activities")
-//    private Set<Team> teams = new HashSet<>();
-//
-//    @ManyToMany(mappedBy = "activities")
-//    private Set<User> mentors = new HashSet<>();
 
 
     public Activity() {
@@ -41,13 +35,6 @@ public class Activity {
         this.deadline = deadline;
     }
 
-//    public Activity(String name, User creator, String deadline, Set<Team> teams, Set<User> mentors) {
-//        this.name = name;
-//        this.creator = creator;
-//        this.deadline = deadline;
-//        this.teams = teams;
-//        this.mentors = mentors;
-//    }
 
     public Activity(Long id, String name, User creator, String deadline) {
         this.id = id;
@@ -56,12 +43,4 @@ public class Activity {
         this.deadline = deadline;
     }
 
-//    public Activity(Long id, String name, User creator, String deadline, Set<Team> teams, Set<User> mentors) {
-//        this.id = id;
-//        this.name = name;
-//        this.creator = creator;
-//        this.deadline = deadline;
-//        this.teams = teams;
-//        this.mentors = mentors;
-//    }
 }

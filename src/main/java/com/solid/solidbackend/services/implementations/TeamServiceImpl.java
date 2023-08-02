@@ -26,7 +26,12 @@ public class TeamServiceImpl implements TeamService {
     private final ActivityRepository activityRepository;
 
     @Autowired
-    public TeamServiceImpl(TeamRepository teamRepository, TeamActivityRepository teamActivityRepository, TeamMembershipRepository teamMembershipRepository, UserRepository userRepository, AssessmentRepository assessmentRepository, ActivityRepository activityRepository) {
+    public TeamServiceImpl(TeamRepository teamRepository,
+                           TeamActivityRepository teamActivityRepository,
+                           TeamMembershipRepository teamMembershipRepository,
+                           UserRepository userRepository,
+                           AssessmentRepository assessmentRepository,
+                           ActivityRepository activityRepository) {
         this.teamRepository = teamRepository;
         this.teamActivityRepository = teamActivityRepository;
         this.teamMembershipRepository = teamMembershipRepository;
@@ -36,15 +41,18 @@ public class TeamServiceImpl implements TeamService {
         this.activityRepository = activityRepository;
     }
 
+    @Override
     public Team getTeamByName(String name) {
         Optional<Team> teamOptional = teamRepository.findByName(name);
 
-        if (!teamOptional.isPresent())
+        if (teamOptional.isEmpty())
             throw new TeamNotFoundException(name);
 
         return teamOptional.get();
     }
 
+
+    @Override
     public Team createTeam(String teamName, User teamLeader) throws TeamExistsException {
         Optional<Team> teamOptional = teamRepository.findByName(teamName);
 
@@ -56,6 +64,15 @@ public class TeamServiceImpl implements TeamService {
     }
     @Override
     public TeamDetailsDTO getTeamDetailsFromAnActivity(String activityName, String teamName) {
+
+        // Fetch activity by name
+        Activity activity = activityRepository.findActivityByName(activityName)
+                .orElseThrow(() -> new ActivityNotFoundException(activityName));
+
+        // Fetch team by name
+        Team team = teamRepository.findByName(teamName)
+                .orElseThrow(() -> new TeamNotFoundException(teamName));
+
         List<User> members = getMembers(teamName);
 
         // for each member, i get all assessments. From there i extract all grades and attendances.
@@ -63,7 +80,7 @@ public class TeamServiceImpl implements TeamService {
         List<Integer> attendancesOfMembers = new LinkedList<>();
         for (var member :
                 members) {
-            List<Assessment> memberAssessments = assessmentRepository.findAllByUserId(member.getId());
+            List<Assessment> memberAssessments = assessmentRepository.findAllByUserIdAndActivity_Id(member.getId(), activity.getId());
 
             float meanOfAllGrades = 0f;
             int attendanceCount = 0;
@@ -90,6 +107,8 @@ public class TeamServiceImpl implements TeamService {
 
         return new TeamDetailsDTO(members, gradesOfMembers, attendancesOfMembers, teamGrade);
     }
+
+
     @Override
     public  List<TeamGradeDTO> getActivityTeamsWithTheirGrades(String activityName)
     {
@@ -107,6 +126,8 @@ public class TeamServiceImpl implements TeamService {
 
         return teamGradeDTOS;
     }
+
+
     @Override
     public List<User> getMembers(String teamName) {
         List<TeamMembership> memberships = teamMembershipRepository.findAllTeamMembershipsByTeamName(teamName);
@@ -135,19 +156,6 @@ public class TeamServiceImpl implements TeamService {
         }
     }
 
-    @Override
-    public List<Team> getTeamsByActivity(String username, String activityName) {
-
-        throw new NotImplementedException();
-        // here the method was not even working. But since is not used, it' s ok.
-        // Activity selectedActivity = activityRepository.findActivityByName(activityName).orElseThrow(
-        //         () -> new ActivityNotFoundException(activityName)
-        // );
-        // var x = teamActivityRepository.findById(selectedActivity.getId()).get();
-        // List<TeamActivity> teamActivities = teamActivityRepository.findById(selectedActivity.getId()).get();
-        // return teamActivities.stream().map(TeamActivity::getTeam).collect(Collectors.toList());
-
-    }
 
 
     @Override
@@ -171,6 +179,8 @@ public class TeamServiceImpl implements TeamService {
 
         return newUser;
     }
+
+
     @Override
     public Team getTeamByUserId(Long userId) {
 

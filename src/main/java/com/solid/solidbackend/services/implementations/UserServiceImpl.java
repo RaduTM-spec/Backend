@@ -16,12 +16,10 @@ import org.springframework.stereotype.Service;
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
-    private final TeamService teamService;
 
     @Autowired
-    public UserServiceImpl(UserRepository userRepository, TeamService teamService) {
+    public UserServiceImpl(UserRepository userRepository) {
         this.userRepository = userRepository;
-        this.teamService = teamService;
     }
 
     @Override

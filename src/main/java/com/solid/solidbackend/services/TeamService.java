@@ -12,10 +12,10 @@ public interface TeamService {
 
     Team getTeamByName(String name);
 
-    List<Team> getTeamsByActivity(String username, String activityName);
     User addUserToTeam(String username, String teamName);
 
     TeamDetailsDTO getTeamDetailsFromAnActivity(String activityName, String teamName);
+
     List<TeamGradeDTO> getActivityTeamsWithTheirGrades(String activityName);
 
     List<User> getMembers(String teamName);

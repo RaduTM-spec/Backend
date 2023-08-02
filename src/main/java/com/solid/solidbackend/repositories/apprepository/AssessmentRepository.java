@@ -13,4 +13,7 @@ public interface AssessmentRepository extends JpaRepository<Assessment, Long> {
 
     List<Assessment> findAllByUserId(Long userId);
 
+
+    List<Assessment> findAllByUserIdAndActivity_Id(Long userId, Long activityId);
+
 }

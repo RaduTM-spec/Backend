@@ -1,5 +1,6 @@
 package com.solid.solidbackend.entities;
 
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -8,6 +9,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @Table(name = "assessments")
+@JsonPropertyOrder({ "id", "title", "activity", "mentor", "user", "grade", "attended", "comment" })
 public class Assessment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

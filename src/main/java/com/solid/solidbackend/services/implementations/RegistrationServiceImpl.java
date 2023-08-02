@@ -22,7 +22,10 @@ public class RegistrationServiceImpl implements RegistrationService {
     private final ActivityRepository activityRepository;
 
     @Autowired
-    public RegistrationServiceImpl(UserService userService, MentorActivityService mentorActivityService, ActivityService activityService, TeamService teamService, ActivityRepository activityRepository) {
+    public RegistrationServiceImpl(UserService userService,
+                                   MentorActivityService mentorActivityService,
+                                   TeamService teamService,
+                                   ActivityRepository activityRepository) {
         this.userService = userService;
         this.mentorActivityService = mentorActivityService;
         this.teamService = teamService;

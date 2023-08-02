@@ -19,19 +19,22 @@ public class ActivityServiceImpl implements ActivityService {
 
     private final ActivityRepository activityRepository;
     private final MentorActivityService mentorActivityService;
-    private final MentorActivityRepository mentorActivityRepository;
     private final UserRepository userRepository;
     private final TeamActivityRepository teamActivityRepository;
     private final TeamMembershipRepository teamMembershipRepository;
     private final TeamActivityService teamActivityService;
     private final UserService userService;
 
-    public ActivityServiceImpl(ActivityRepository activityRepository, MentorActivityService mentorActivityService, MentorActivityRepository mentorActivityRepository, UserRepository userRepository,
-                               TeamActivityRepository teamActivityRepository, TeamMembershipRepository teamMembershipRepository, TeamActivityService teamActivityService, UserService userService) {
+    public ActivityServiceImpl(ActivityRepository activityRepository,
+                               MentorActivityService mentorActivityService,
+                               UserRepository userRepository,
+                               TeamActivityRepository teamActivityRepository,
+                               TeamMembershipRepository teamMembershipRepository,
+                               TeamActivityService teamActivityService,
+                               UserService userService) {
 
         this.activityRepository = activityRepository;
         this.mentorActivityService = mentorActivityService;
-        this.mentorActivityRepository = mentorActivityRepository;
         this.userRepository = userRepository;
         this.teamActivityRepository = teamActivityRepository;
         this.teamMembershipRepository = teamMembershipRepository;
